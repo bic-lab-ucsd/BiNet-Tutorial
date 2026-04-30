@@ -1,6 +1,6 @@
 # PNS-Tutorial
  
-Tutorial for quantifying bilingual language experience using personal network science methods, including the **BiNet (Bilingual Interactional Network) Survey**, preprocessing pipeline, and tools for computing compositional and structural network measures.
+Tutorial for quantifying bilingual language experience using personal network science methods, including the BiNet (Bilingual Interactional Network) Survey, preprocessing pipeline, and tools for computing compositional and structural network measures.
  
 **[Preprocessing & Compositional Measures Tutorial](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)** | **[Structural Measures Tutorial](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_Structural_Measures/Language%20Structural%20Measures%20Tutorial.md)** 
  
@@ -12,12 +12,10 @@ The tutorial is organized into three components, mirroring the structure of the 
  
 ### 1. BiNet: Bilingual Interactional Network Survey
 
-The data collection instrument — a Network Canvas protocol that elicits an ego's social network and language use with each alter. The protocol files (both an editable `.netcanvas` version and a PDF summary) are available in [`BiNet_Questionnaire/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_Questionnaire).
+The data collection instrument — a Network Canvas protocol that elicits an ego's social network and language use with each alter. The protocol files (both an editable `.netcanvas` version and a PDF summary) are available in .
 
-### `BiNet_Questionnaire/`
- 
-The Network Canvas protocol used for data collection.
- 
+#### [`BiNet_Questionnaire/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_Questionnaire)
+
 ```
 BiNet_Questionnaire/
 ├── NetworkCanvasProtocol_BiNet_20260417 Protocol Summary.pdf  # PDF reference version
@@ -35,8 +33,9 @@ Clean raw Network Canvas exports, link them with Language History Questionnaire 
 - **Step 1.** Collapsing binary indicator columns into categorical variables
 - **Step 2.** Constructing ego-level compositional measures
 
-### `BiNet_preprocessing_compositional_Measures/`
- 
+The tutorial files are available in .
+
+#### [`BiNet_preprocessing_compositional_Measures/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_preprocessing_compositional_Measures)
 Cleaning, linking, and compositional analysis of Network Canvas data.
  
 ```
@@ -78,9 +77,8 @@ devtools::install_github("bic-lab-ucsd/PNS-Tutorial",
 ```
 
 To help readers build intuition for how ego-language betweenness is computed, we also designed an interactive demo that walks through the calculation step by step: **[Interactive demo: How ego-language betweenness is calculated](https://bic-lab-ucsd.github.io/PNS-Tutorial/BiNet_Structural_Measures/ego_betweenness_interactive_example.html)**
- 
-### `BiNet_Structural_Measures/`
- 
+
+#### [`BiNet_Structural_Measures/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_Structural_Measures)
 Structural measure computation, including a custom R package.
  
 ```
