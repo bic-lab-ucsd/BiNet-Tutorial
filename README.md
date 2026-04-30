@@ -56,7 +56,7 @@ BiNet_preprocessing_compositional_Measures/
  
 ### 3. Structural Measures: How the Network is Connected?
  
-Compute network structural measures from the cleaned data, including **Language betweenness**, and the **E-I (External-Internal) index** for assessing language-based homophily in the network.
+Compute network structural measures from the cleaned data, including **Language betweenness**, and the **E-I (External-Internal) index** for assessing language-based compartmentalization or integration in the network.
  
 **[Open the structural measures tutorial](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_Structural_Measures/Language%20Structural%20Measures%20Tutorial.md)**
 
