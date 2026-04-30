@@ -16,11 +16,13 @@ The data collection instrument — a Network Canvas protocol that elicits an ego
  
 ### 2. Compositional Measures: What Makes Up the Network?
  
-Clean raw Network Canvas exports, link them with Language History Questionnaire (LHQ) data, and compute ego-level compositional summaries (e.g., proportion of L1/L2 alters, language diversity).
+Clean raw Network Canvas exports, link them with Language History Questionnaire (LHQ) data, and compute ego-level compositional summaries (e.g., proportion of L1/L2 alters, language diversity). 
+
+**[Open the preprocessing & compositional measures tutorial](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)**
  
 - **Step 1.** Collapsing binary indicator columns into categorical variables
 - **Step 2.** Constructing ego-level compositional measures
-**[Open the preprocessing & compositional measures tutorial](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)**
+
  
 ### 3. Structural Measures: How the Network is Connected?
  
