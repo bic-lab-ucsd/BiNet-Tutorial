@@ -11,8 +11,8 @@ This project is developed in **R**. It walks through the full pipeline from raw 
 The tutorial is organized into three components, mirroring the structure of the manuscript.
  
 ### 1. BiNet: Bilingual Interactional Network Survey
- 
-The data collection instrument — a Network Canvas protocol that elicits an ego's social network and language use with each alter. The protocol files (both an editable `.netcanvas` version and a PDF summary) are available in [`BiNet_Questionnaire/`](#binet_questionnaire).
+
+The data collection instrument — a Network Canvas protocol that elicits an ego's social network and language use with each alter. The protocol files (both an editable `.netcanvas` version and a PDF summary) are available in [`BiNet_Questionnaire/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_Questionnaire).
  
 ### 2. Compositional Measures: What Makes Up the Network?
  
@@ -27,8 +27,8 @@ Clean raw Network Canvas exports, link them with Language History Questionnaire 
 Compute network structural measures from the cleaned data, including density, **betweenness centrality**, and the **E-I (External-Internal) index** for assessing language-based homophily in the network.
  
 **[Open the structural measures tutorial](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_Structural_Measures/Language%20Structural%20Measures%20Tutorial.md)**
- 
-The structural tutorial uses a custom R package, **`egoLangBetweenness`**, for computing ego-language betweenness. **[Interactive Demo about the calculation of language betweenness](https://bic-lab-ucsd.github.io/PNS-Tutorial/BiNet_Structural_Measures/ego_betweenness_interactive_example.html)**Install it directly from this repo:
+
+To compute ego-language betweenness, we developed a custom R package, **`egoLangBetweenness`**. You can install it directly from this repo:
  
 ```r
 # Install devtools if you haven't already
@@ -39,6 +39,9 @@ devtools::install_github("bic-lab-ucsd/PNS-Tutorial",
                         subdir = "BiNet_Structural_Measures/betweenness_package",
                         force = TRUE)
 ```
+
+To help readers build intuition for how ego-language betweenness is computed, we also designed an interactive demo that walks through the calculation step by step: **[Interactive demo: How ego-language betweenness is calculated](https://bic-lab-ucsd.github.io/PNS-Tutorial/BiNet_Structural_Measures/ego_betweenness_interactive_example.html)**
+
  
 ## Repository structure
  
