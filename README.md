@@ -13,7 +13,7 @@ The tutorial is organized into three components, mirroring the structure of the 
 ### 1. BiNet: Bilingual Interactional Network Survey
 
 The data collection instrument — a Network Canvas protocol that elicits an ego's social network and language use with each alter. 
-The protocol files (both an editable `.netcanvas` version and a PDF summary) are available in #### [`BiNet_Questionnaire/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_Questionnaire)
+The protocol files (both an editable `.netcanvas` version and a PDF summary) are available in [`BiNet_Questionnaire/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_Questionnaire)
 
 ```
 BiNet_Questionnaire/
@@ -74,7 +74,7 @@ devtools::install_github("bic-lab-ucsd/PNS-Tutorial",
 
 To help readers build intuition for how ego-language betweenness is computed, we also designed an interactive demo that walks through the calculation step by step: **[Interactive demo: How ego-language betweenness is calculated](https://bic-lab-ucsd.github.io/PNS-Tutorial/BiNet_Structural_Measures/ego_betweenness_interactive_example.html)**
 
-Structural measure computation, including a custom R package are available in #### [`BiNet_Structural_Measures/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_Structural_Measures)
+Structural measure computation, including a custom R package are available in [`BiNet_Structural_Measures/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_Structural_Measures)
 
 ```
 BiNet_Structural_Measures/
