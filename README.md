@@ -116,4 +116,4 @@ Bilingualism in Context Lab, UC San Diego
 For questions about this tutorial, please contact:
 - **Jiaze Li** — [jil472@ucsd.edu]
 - **Yumeng Shen** — [yus099@ucsd.edu]
-- **[Anne L. Beatty-Martínez]** — [abeattymartinez@ucsd.edu]
+- **Anne L. Beatty-Martínez** — [abeattymartinez@ucsd.edu]
