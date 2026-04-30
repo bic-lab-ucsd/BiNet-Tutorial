@@ -959,8 +959,7 @@ All preprocessing is complete. We now save the three preprocessed
 datasets (`egoData_linked`, `alterData_linked`, `edgelist_linked`) to a
 new `preprocessed_data/` folder as a clean checkpoint, so you can reload
 them in future sessions without rerunning Sections 1–2. With the data
-cleaned and saved, we are ready to compute language-related variables
-(**link**).
+cleaned and saved, we are ready to compute structure-related variables.See the [Language Structural Measures Tutorial](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_Structural_Measures/Language%20Structural%20Measures%20Tutorial.md).
 
 ``` r
 # Create output folder (does nothing if it already exists)
