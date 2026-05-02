@@ -1,4 +1,4 @@
-# Language Structural Measures Guideline
+# BiNet Structural Measures Guideline
 Zoey Li
 2026-04-30
 
