@@ -1,4 +1,4 @@
-# Language Structural Measures Guideline
+# BiNet Structural Measures Guideline
 Zoey Li
 2026-05-01
 
@@ -91,7 +91,7 @@ Conceptually, this measure answers:
   communities
 
   [**Try the interactive
-  example**](https://bic-lab-ucsd.github.io/PNS-Tutorial/BiNet_Structural_Measures/ego_betweenness_interactive_example.html) —
+  example**](https://bic-lab-ucsd.github.io/BiNet-Tutorial/BiNet_Structural_Measures/ego_betweenness_interactive_example.html) —
   play with the network to see how the score is computed step by step.
 
 This measure complements existing indices such as language entropy by
@@ -151,7 +151,7 @@ This package works on ego-network data. It assumes that the input data
 have been preprocessed, such that each alter is already assigned to a
 language category (e.g., `languageUsedCategory`). For example, users can
 refer to[preprocessing
-pipeline](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)
+pipeline](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)
 for a workflow
 
 The input typically consists of:
