@@ -339,9 +339,7 @@ egor_obj <- egor::threefiles_to_egor(
 
 ### Step 3: Compute E-I Index
 
-We compute two versions of the E–I index:
-
--   **Raw E–I index**: based on the number of ties, defined as ( (E - I) / (E + I) ) where (E) and (I) are the numbers of between-group and within-group ties. This follows the standard definition but is sensitive to group size imbalance.
+We compute the Density E–I index:
 
 -   **Density-rescaled E–I index**: replaces tie counts with tie densities (i.e., adjusts for the number of possible ties), providing a measure that is less affected by differences in group size.
 
