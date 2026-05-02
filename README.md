@@ -2,7 +2,7 @@
  
 Tutorial for quantifying bilingual language experience using personal network science methods, including the BiNet (Bilingual Interactional Network) Survey, preprocessing pipeline, and tools for computing compositional and structural network measures.
  
-**[Preprocessing & Compositional Measures Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)** | **[Structural Measures Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_Structural_Measures/Language%20Structural%20Measures%20Tutorial.md)** 
+**[Preprocessing & Compositional Measures Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)** | **[Structural Measures Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_Structural_Measures/BiNet%20Structural%20Measures%20Tutorial.md)** 
  
 This project is developed in **R**. It walks through the full pipeline from raw [Network Canvas](https://networkcanvas.com/) exports to ego-level compositional and structural network measures of bilingual language experience, accompanying the manuscript on the BiNet survey methodology.
  
@@ -58,7 +58,7 @@ BiNet_preprocessing_compositional_Measures/
  
 Compute network structural measures from the cleaned data, including **Language betweenness**, and the **E-I (External-Internal) index** for assessing language-based compartmentalization or integration in the network.
  
-**[Open the structural measures tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_Structural_Measures/Language%20Structural%20Measures%20Tutorial.md)**
+**[Open the structural measures tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_Structural_Measures/BiNet%20Structural%20Measures%20Tutorial.md)**
 
 To compute ego-language betweenness, we developed a custom R package, **`egoLangBetweenness`**. You can install it directly from this repo:
  
