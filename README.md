@@ -67,7 +67,7 @@ To compute ego-language betweenness, we developed a custom R package, **`egoLang
 if (!"devtools" %in% rownames(installed.packages())) install.packages("devtools")
  
 # Install the egoLangBetweenness package from this repo
-devtools::install_github("bic-lab-ucsd/PNS-Tutorial",
+devtools::install_github("bic-lab-ucsd/BiNet-Tutorial",
                         subdir = "BiNet_Structural_Measures/betweenness_package",
                         force = TRUE)
 ```
