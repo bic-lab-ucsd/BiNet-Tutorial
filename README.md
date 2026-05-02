@@ -2,7 +2,7 @@
  
 Tutorial for quantifying bilingual language experience using personal network science methods, including the BiNet (Bilingual Interactional Network) Survey, preprocessing pipeline, and tools for computing compositional and structural network measures.
  
-**[Preprocessing & Compositional Measures Tutorial](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)** | **[Structural Measures Tutorial](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_Structural_Measures/Language%20Structural%20Measures%20Tutorial.md)** 
+**[Preprocessing & Compositional Measures Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)** | **[Structural Measures Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_Structural_Measures/Language%20Structural%20Measures%20Tutorial.md)** 
  
 This project is developed in **R**. It walks through the full pipeline from raw [Network Canvas](https://networkcanvas.com/) exports to ego-level compositional and structural network measures of bilingual language experience, accompanying the manuscript on the BiNet survey methodology.
  
@@ -13,7 +13,7 @@ The tutorial is organized into three components, mirroring the structure of the 
 ### 1. BiNet: Bilingual Interactional Network Survey
 
 The data collection instrument — a Network Canvas protocol that elicits an ego's social network and language use with each alter. 
-The protocol files (both an editable `.netcanvas` version and a PDF summary) are available in [`BiNet_Questionnaire/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_Questionnaire)
+The protocol files (both an editable `.netcanvas` version and a PDF summary) are available in [`BiNet_Questionnaire/`](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/main/BiNet_Questionnaire)
 
 ```
 BiNet_Questionnaire/
@@ -27,12 +27,12 @@ To view or edit the `.netcanvas` file, open it with the [Network Canvas Architec
  
 Clean raw Network Canvas exports, link them with Language History Questionnaire (LHQ) data, and compute ego-level compositional summaries (e.g., proportion of L1/L2 alters, language diversity). 
 
-**[Open the preprocessing & compositional measures tutorial](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)**
+**[Open the preprocessing & compositional measures tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)**
  
 - **Step 1.** Collapsing binary indicator columns into categorical variables
 - **Step 2.** Constructing ego-level compositional measures
 
-The all the cleaning, linking, and compositional analysis of Network Canvas data are available in [`BiNet_preprocessing_compositional_Measures/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_preprocessing_compositional_Measures)
+The all the cleaning, linking, and compositional analysis of Network Canvas data are available in [`BiNet_preprocessing_compositional_Measures/`](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/main/BiNet_preprocessing_compositional_Measures)
 
 ```
 BiNet_preprocessing_compositional_Measures/
@@ -58,7 +58,7 @@ BiNet_preprocessing_compositional_Measures/
  
 Compute network structural measures from the cleaned data, including **Language betweenness**, and the **E-I (External-Internal) index** for assessing language-based compartmentalization or integration in the network.
  
-**[Open the structural measures tutorial](https://github.com/bic-lab-ucsd/PNS-Tutorial/blob/main/BiNet_Structural_Measures/Language%20Structural%20Measures%20Tutorial.md)**
+**[Open the structural measures tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_Structural_Measures/Language%20Structural%20Measures%20Tutorial.md)**
 
 To compute ego-language betweenness, we developed a custom R package, **`egoLangBetweenness`**. You can install it directly from this repo:
  
@@ -72,9 +72,9 @@ devtools::install_github("bic-lab-ucsd/BiNet-Tutorial",
                         force = TRUE)
 ```
 
-To help readers build intuition for how ego-language betweenness is computed, we also designed an interactive demo that walks through the calculation step by step: **[Interactive demo: How ego-language betweenness is calculated](https://bic-lab-ucsd.github.io/PNS-Tutorial/BiNet_Structural_Measures/ego_betweenness_interactive_example.html)**
+To help readers build intuition for how ego-language betweenness is computed, we also designed an interactive demo that walks through the calculation step by step: **[Interactive demo: How ego-language betweenness is calculated](https://bic-lab-ucsd.github.io/BiNet-Tutorial/BiNet_Structural_Measures/ego_betweenness_interactive_example.html)**
 
-Structural measure computation, including a custom R package are available in [`BiNet_Structural_Measures/`](https://github.com/bic-lab-ucsd/PNS-Tutorial/tree/main/BiNet_Structural_Measures)
+Structural measure computation, including a custom R package are available in [`BiNet_Structural_Measures/`](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/main/BiNet_Structural_Measures)
 
 ```
 BiNet_Structural_Measures/
@@ -101,7 +101,7 @@ BiNet_Structural_Measures/
  
 If you use these materials in your research, please cite:
  
-> [Citation ???]
+> [Li, J., Shen, Y., Maximous, C. & Beatty-Martínez, A. L. (2026). Bilingual Interactional Network (BiNet) Tutorial: Quantifying bilingual language experience using network science tools [Tutorial]. GitHub. https://github.com/bic-lab-ucsd/BiNet-Tutorial]
  
 ## Contact
 Bilingualism in Context Lab, UC San Diego
@@ -110,4 +110,5 @@ Bilingualism in Context Lab, UC San Diego
 For questions about this tutorial, please contact:
 - **Jiaze Li** — [jil472@ucsd.edu]
 - **Yumeng Shen** — [yus099@ucsd.edu]
+- **Catherine Maximous** — [cmaximous@ucsd.edu]
 - **Anne L. Beatty-Martínez** — [abeattymartinez@ucsd.edu]
