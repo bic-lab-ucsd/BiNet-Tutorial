@@ -150,7 +150,7 @@ devtools::install_github("bic-lab-ucsd/PNS-Tutorial",
 This package works on ego-network data. It assumes that the input data
 have been preprocessed, such that each alter is already assigned to a
 language category (e.g., `languageUsedCategory`). For example, users can
-refer to[preprocessing
+refer to [preprocessing
 pipeline](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)
 for a workflow
 
