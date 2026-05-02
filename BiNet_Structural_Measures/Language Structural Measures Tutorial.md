@@ -26,7 +26,7 @@ Zoey Li
     - [Step 3: Compute E-I Index](#step-3-compute-e-i-index)
   - [Combine and Save the Results](#combine-and-save-the-results)
 
-# Language Structural Measures Guideline
+# BiNet Structural Measures Guideline
 
 ## Package dependencies and version requirements
 
