@@ -1,4 +1,4 @@
-# PNS-Tutorial
+# BiNet-Tutorial
  
 Tutorial for quantifying bilingual language experience using personal network science methods, including the BiNet (Bilingual Interactional Network) Survey, preprocessing pipeline, and tools for computing compositional and structural network measures.
  
