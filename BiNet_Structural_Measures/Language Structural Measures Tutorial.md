@@ -109,7 +109,7 @@ GitHub on R:
 if(!"devtools" %in% rownames(installed.packages())) install.packages("devtools")
 
 # Install the development version from github
-devtools::install_github("bic-lab-ucsd/PNS-Tutorial", 
+devtools::install_github("bic-lab-ucsd/BiNet-Tutorial", 
                          subdir = "BiNet_Structural_Measures/betweenness_package",
                          force = TRUE)
 ```
