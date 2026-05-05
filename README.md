@@ -48,7 +48,6 @@ BiNet_preprocessing_compositional_Measures/
 │   ├── binet_ego_compositional.csv         # Final ego-level compositional measures
 │   ├── binet_egoData_linked.csv            # Ego-level dataset joined with compositional variables
 │   └── binet_tidy_alter.csv                # Long-format alter dataset used for aggregation
-├── figures_ego_networks/                   # 9 examples of network visualizations
 ├── demo_lhq.csv                            # demo LHQ dataset
 └── BiNet_preprocessing_tutorial.qmd        # Main tutorial (Quarto source)
 ```
@@ -95,8 +94,27 @@ BiNet_Structural_Measures/
 └── Language Structural Measures Tutorial.md # Main tutorial (methodology + usage)
 ```
  
+### 4. Network Visualization: What does the Network Look Like?
 
- 
+Visualize each ego's network with node color encoding language use and node size encoding ego-alter-level attributes (e.g., emotional closeness,
+interaction frequency). Two plot types are provided: a basic circle layout for quick inspection, and a context-sector layout that spatially groups alters by interaction context (Family, Community, Work, Social, School).
+- **Step 1.** Build ego-centered `igraph` objects from preprocessed alter and edge data
+- **Step 2.** Generate basic sociograms (uniform circle layout, language color encoding)
+- **Step 3.** Generate contextualized sociograms (dynamic sector layout grouping alters by interaction context)
+- **Step 4.** Export publication-quality PNG files for all participants
+
+All visualization functions and export scripts are available in [`BiNet_Network_Visualization/`](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/main/BiNet_Network_Visualization)
+
+```
+BiNet_Network_Visualization/
+├── figures_ego_networks/               # Exported network plots
+│   ├── basic/                          # Basic circle-layout sociograms (one PNG per participant)
+│   └── sector/                         # Context-sector sociograms (one PNG per participant)
+└── BiNet_network_visualization.qmd     # Visualization tutorial (Quarto source)
+```
+> **Prerequisites.** This script loads output files produced by the preprocessing tutorial. Run `BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.qmd` first and confirm that `preprocessed_data/` and `Compositional measures/` are populated before running this script.
+
+
 ## Citation
  
 If you use these materials in your research, please cite:
