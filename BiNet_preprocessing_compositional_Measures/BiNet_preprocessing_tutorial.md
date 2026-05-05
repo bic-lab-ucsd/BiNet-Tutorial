@@ -1,51 +1,52 @@
 # BiNet Preprocessing Tutorial
 Monica Shen
-2026-04-29
+2026-05-05
 
-- [Introduction](#introduction)
-- [Understanding the Data Structure](#understanding-the-data-structure)
-  - [Three Levels](#three-levels)
-  - [Ego-level Data — `*_ego.csv`](#ego)
-  - [Alter-level Data — `*_attributeList_People.csv`](#alter)
-  - [Tie-level data — `*_edgeList_tie.csv`](#ties)
-  - [Linking the Pieces: Connect Multilevel Network
-    Data](#linking-the-pieces-connect-multilevel-network-data)
-  - [References](#references)
-  - [0.Setup](#0setup)
-- [Demo Script](#demo-script)
-  - [1. Load and Merge Raw Data](#1-load-and-merge-raw-data)
-    - [1.1 Load LHQ Data](#11-load-lhq-data)
-    - [1.2 Build Linked Datasets](#12-build-linked-datasets)
-    - [1.3 Sanity Checks for Linked
-      Datasets](#13-sanity-checks-for-linked-datasets)
-  - [2. Alter-Level Preprocessing](#2-alter-level-preprocessing)
-    - [2.1 Interaction Context: Dummy Columns → Single
-      Variable](#21-interaction-context-dummy-columns--single-variable)
-    - [2.2 Language Columns: String →
-      Logical](#22-language-columns-string--logical)
-    - [2.3 Code-switching (CS) Frequency: Empty String → NA →
-      Numeric](#23-code-switching-cs-frequency-empty-string--na--numeric)
-    - [2.4 Ordinal Columns to Numeric](#24-ordinal-columns-to-numeric)
-    - [2.5 Language Categorization](#25-language-categorization)
-    - [2.6 Sanity Checks for Preprocessed
-      Variables](#26-sanity-checks-for-preprocessed-variables)
-  - [3. Tidy Alter-Level Dataset](#3-tidy-alter-level-dataset)
-  - [4. Build `egor` Object](#4-build-egor-object)
-  - [5. Compositional Measures](#5-compositional-measures)
-    - [5.1 Global CS Frequency Mean](#51-global-cs-frequency-mean)
-    - [5.2 Global Interaction Frequency
-      Mean](#52-global-interaction-frequency-mean)
-    - [5.3 Emotional Closeness](#53-emotional-closeness)
-    - [5.4 Alter Language Composition](#54-alter-language-composition)
-    - [5.5 CS Frequency by Interaction
-      Context](#55-cs-frequency-by-interaction-context)
-    - [5.6 Language Homophily](#56-language-homophily)
-    - [5.7 Sanity Checks for Compositional
-      Variables](#57-sanity-checks-for-compositional-variables)
-  - [6. Network Visualization](#6-network-visualization)
-    - [6.1 Ego-Centered Network Plot](#61-ego-centered-network-plot)
-  - [7. Export Network Plots](#7-export-network-plots)
-  - [8. Save Data Outputs](#8-save-data-outputs)
+-   [Introduction](#introduction)
+    -   [**Core Concepts**](#core-concepts)
+-   [Understanding the Data
+    Structure](#understanding-the-data-structure)
+    -   [Three Levels](#three-levels)
+    -   [Ego-level Data — `*_ego.csv`](#ego)
+    -   [Alter-level Data — `*_attributeList_People.csv`](#alter)
+    -   [Tie-level data — `*_edgeList_tie.csv`](#ties)
+    -   [Linking the Pieces: Connect Multilevel Network
+        Data](#linking-the-pieces-connect-multilevel-network-data)
+    -   [References](#references)
+    -   [0.Setup](#setup)
+-   [Demo Script](#demo-script)
+    -   [1. Load and Merge Raw Data](#load-and-merge-raw-data)
+        -   [1.1 Load LHQ Data](#load-lhq-data)
+        -   [1.2 Build Linked Datasets](#build-linked-datasets)
+        -   [1.3 Sanity Checks for Linked
+            Datasets](#sanity-checks-for-linked-datasets)
+    -   [2. Alter-Level Preprocessing](#alter-level-preprocessing)
+        -   [2.1 Interaction Context: Dummy Columns → Single
+            Variable](#interaction-context-dummy-columns-single-variable)
+        -   [2.2 Language Columns: String →
+            Logical](#language-columns-string-logical)
+        -   [2.3 Codeswitching (CS) Frequency: Empty String → NA →
+            Numeric](#codeswitching-cs-frequency-empty-string-na-numeric)
+        -   [2.4 Ordinal Columns to
+            Numeric](#ordinal-columns-to-numeric)
+        -   [2.5 Language Categorization](#language-categorization)
+        -   [2.6 Sanity Checks for Preprocessed
+            Variables](#sanity-checks-for-preprocessed-variables)
+    -   [3. Tidy Alter-Level Dataset](#tidy-alter-level-dataset)
+    -   [4. Build `egor` Object](#build-egor-object)
+    -   [5. Compositional Measures](#compositional-measures)
+        -   [5.1 Global CS Frequency Mean](#global-cs-frequency-mean)
+        -   [5.2 Global Interaction Frequency
+            Mean](#global-interaction-frequency-mean)
+        -   [5.3 Emotional Closeness](#emotional-closeness)
+        -   [5.4 Alter Language
+            Composition](#alter-language-composition)
+        -   [5.5 CS Frequency by Interaction
+            Context](#cs-frequency-by-interaction-context)
+        -   [5.6 Language Homophily](#language-homophily)
+        -   [5.7 Sanity Checks for Compositional
+            Variables](#sanity-checks-for-compositional-variables)
+    -   [6. Save Data Outputs](#save-data-outputs)
 
 # Introduction
 
@@ -65,39 +66,33 @@ organized into the following stages:
 
 1.  Load and merge Network Canvas export files with Language History
     Questionnaire (LHQ) data (`demo_lhq.csv`)
-
 2.  Preprocess alter-level variables (recode, classify, and tidy)
-
 3.  Build the `egor` object for egocentric network analysis
-
 4.  Derive compositional measures describing network composition
+5.  Save outputs for use in downstream analyses
 
-5.  Visualize ego networks
+Network visualization is covered in the companion script
+`../BiNet_Network_Visualization/BiNet_network_visualization.qmd`, which
+loads the output files saved in Step 5.
 
-6.  Run data-quality checks and export final outputs
+> **Note on demo data.** The Network Canvas export files and LHQ data
+> used in this tutorial are fully simulated datasets created for
+> instructional purposes. They do not contain real participant
+> information.
 
-**Important Notes**  
-  
-1. The Network Canvas export files and Language History Questionnaire
-(LHQ) data used in this tutorial are **fully simulated demo datasets**
-created for instructional purposes. They do not contain real participant
-information.  
-  
-2. The column names in `demo_lhq.csv` will vary across studies depending
-on questionnaire design, research goals, and data-collection platforms.
-This tutorial assumes that users have a separate questionnaire
-containing participant demographic and language-background information.
-You should customize the import and merge steps so that the participant
-identifier in the separate questionnaire (e.g., `participant_id`)
-matches the `ego_id` field in the Network Canvas export.
+> **Note on column names.** Column names in `demo_lhq.csv` will vary
+> across studies depending on questionnaire design and data-collection
+> platform. Customize the import and merge steps so that the participant
+> identifier in your questionnaire (e.g., `participant_id`) matches the
+> `ego_id` field in the Network Canvas export.
 
-**Core Concepts**
+## **Core Concepts**
 
-- **ego:** the participant
+-   **ego:** the participant
 
-- **alters:** the people nominated by the participant
+-   **alters:** the people nominated by the participant
 
-- **ties:** the relationships among those alters
+-   **ties:** the relationships among those alters
 
 # Understanding the Data Structure
 
@@ -121,16 +116,66 @@ matching files at once using `list.files()` + `lapply()` +
 
 One file per participant; one row per file.
 
-| Variable | Type | Description |
-|----|----|----|
-| `networkCanvasEgoUUID` | character | Primary link variable that links `*_ego.csv`, `*_attributeList_People.csv`, `*_edgeList_tie.csv` |
-| `networkCanvasCaseID` | character | case ID (same as `ego_id`) |
-| `networkCanvasSessionID` | character | Session identifier |
-| `networkCanvasProtocolName` | character | Protocol filename (`NetworkCanvasProtocol_BiNet_20260417`) |
-| `sessionStart` | datetime | Session start timestamp (ISO 8601) |
-| `sessionFinish` | datetime | Session end timestamp |
-| `sessionExported` | datetime | Export timestamp |
-| `ego_id` | character | 8-character participant id (e.g., `annbea01`) that links `*_ego.csv` and `lhq.csv` |
+<table style="width:99%;">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 9%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>networkCanvasEgoUUID</code></td>
+<td>character</td>
+<td>Primary link variable that links <code>*_ego.csv</code>,
+<code>*_attributeList_People.csv</code>,
+<code>*_edgeList_tie.csv</code></td>
+</tr>
+<tr>
+<td><code>networkCanvasCaseID</code></td>
+<td>character</td>
+<td>case ID (same as <code>ego_id</code>)</td>
+</tr>
+<tr>
+<td><code>networkCanvasSessionID</code></td>
+<td>character</td>
+<td>Session identifier</td>
+</tr>
+<tr>
+<td><code>networkCanvasProtocolName</code></td>
+<td>character</td>
+<td>Protocol filename
+(<code>NetworkCanvasProtocol_BiNet_20260417</code>)</td>
+</tr>
+<tr>
+<td><code>sessionStart</code></td>
+<td>datetime</td>
+<td>Session start timestamp (ISO 8601)</td>
+</tr>
+<tr>
+<td><code>sessionFinish</code></td>
+<td>datetime</td>
+<td>Session end timestamp</td>
+</tr>
+<tr>
+<td><code>sessionExported</code></td>
+<td>datetime</td>
+<td>Export timestamp</td>
+</tr>
+<tr>
+<td><code>ego_id</code></td>
+<td>character</td>
+<td>8-character participant id (e.g., <code>annbea01</code>) that links
+<code>*_ego.csv</code> and <code>lhq.csv</code></td>
+</tr>
+</tbody>
+</table>
 
 **Notes**: `networkCanvasCaseID` and `ego_id` columns should be
 identical
@@ -141,23 +186,86 @@ One file per participant; 15 rows per file.
 
 #### System columns
 
-| Variable | Type | Description |
-|----|----|----|
-| `nodeID` | integer | Within-participant alter index (1–15) |
-| `networkCanvasEgoUUID` | character | Primary link variable that joins `*_attributeList_People.csv` back to `*_ego.csv` |
-| `networkCanvasUUID` | character | Unique alter identifier that links `*_attributeList_People.csv` and `*_edgeList_tie.csv` |
+<table style="width:99%;">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 9%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nodeID</code></td>
+<td>integer</td>
+<td>Within-participant alter index (1–15)</td>
+</tr>
+<tr>
+<td><code>networkCanvasEgoUUID</code></td>
+<td>character</td>
+<td>Primary link variable that joins
+<code>*_attributeList_People.csv</code> back to
+<code>*_ego.csv</code></td>
+</tr>
+<tr>
+<td><code>networkCanvasUUID</code></td>
+<td>character</td>
+<td>Unique alter identifier that links
+<code>*_attributeList_People.csv</code> and
+<code>*_edgeList_tie.csv</code></td>
+</tr>
+</tbody>
+</table>
 
 #### Alter-level attributes
 
 1.  **Alter demographics**
 
-| Variable | Type | Values | Description |
-|----|----|----|----|
-| `name` | character | Free text | Alter name |
-| `alter_gender` | character | `female`, `male`, `other` | Alter’s gender |
-| `alter_age` | character | `0_9`, `10_17`, `18_25`, `26_35`, `36_45`, `46_55`, `56_65`, `65_99` | Alter’s age group |
+<table style="width:98%;">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 9%" />
+<col style="width: 58%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>character</td>
+<td>Free text</td>
+<td>Alter name</td>
+</tr>
+<tr>
+<td><code>alter_gender</code></td>
+<td>character</td>
+<td><code>female</code>, <code>male</code>, <code>other</code></td>
+<td>Alter’s gender</td>
+</tr>
+<tr>
+<td><code>alter_age</code></td>
+<td>character</td>
+<td><code>0_9</code>, <code>10_17</code>, <code>18_25</code>,
+<code>26_35</code>, <code>36_45</code>, <code>46_55</code>,
+<code>56_65</code>, <code>65_99</code></td>
+<td>Alter’s age group</td>
+</tr>
+</tbody>
+</table>
 
-2.  **Ego-alter Interactional attributes**
+1.  **Ego-alter Interactional attributes**
 
 <table style="width:99%;">
 <colgroup>
@@ -200,28 +308,55 @@ alter</strong> (stage skipped by protocol filter)</p></td>
 
 **Interaction context** (dummy-coded, 5 columns)
 
-**Format:** `ego_alter_interaction_context_{context}` \| **Type:**
-logical (`true`/`false`) \| **Note:** Exactly one column is `true` per
+**Format:** `ego_alter_interaction_context_{context}` | **Type:**
+logical (`true`/`false`) | **Note:** Exactly one column is `true` per
 alter (single-select CategoricalBin)
 
-| Column | Context |
-|----|----|
-| `ego_alter_interaction_context_family` | Family (people you live with or close relatives) |
-| `ego_alter_interaction_context_community` | Non-relatives sharing living spaces (housemates, neighbors) |
-| `ego_alter_interaction_context_school` | Classmates, professors |
-| `ego_alter_interaction_context_work` | Coworkers, supervisors, clients |
-| `ego_alter_interaction_context_social` | Recreational / hobby contexts outside school or work |
+<table>
+<colgroup>
+<col style="width: 41%" />
+<col style="width: 58%" />
+</colgroup>
+<thead>
+<tr>
+<th>Column</th>
+<th>Context</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ego_alter_interaction_context_family</code></td>
+<td>Family (people you live with or close relatives)</td>
+</tr>
+<tr>
+<td><code>ego_alter_interaction_context_community</code></td>
+<td>Non-relatives sharing living spaces (housemates, neighbors)</td>
+</tr>
+<tr>
+<td><code>ego_alter_interaction_context_school</code></td>
+<td>Classmates, professors</td>
+</tr>
+<tr>
+<td><code>ego_alter_interaction_context_work</code></td>
+<td>Coworkers, supervisors, clients</td>
+</tr>
+<tr>
+<td><code>ego_alter_interaction_context_social</code></td>
+<td>Recreational / hobby contexts outside school or work</td>
+</tr>
+</tbody>
+</table>
 
 3\. Alter language repertoire (10 columns)
 
-- Format: `alter_language_{language}` \| Type: logical (`true`/`false`)
+-   Format: `alter_language_{language}` | Type: logical (`true`/`false`)
 
 4\. Ego-alter language use (10 columns)
 
-- Format: `ego_alter_language_{language}` \| Type: logical
-  (`true`/`false`)
+-   Format: `ego_alter_language_{language}` | Type: logical
+    (`true`/`false`)
 
-Note: Languages options included in the protocol: `english`, `spanish`,
+Note: Language options included in the protocol: `english`, `spanish`,
 `mandarin`, `cantonese`, `filipino`, `vietnamese`, `arabic`, `korean`,
 `japanese`, `other`
 
@@ -229,15 +364,60 @@ Note: Languages options included in the protocol: `english`, `spanish`,
 
 One file per participant; variable number of rows per file.
 
-| Variable | Type | Description |
-|----|----|----|
-| `edgeID` | integer | Within-participant edge index |
-| `from` | integer | `nodeID` of source alter |
-| `to` | integer | `nodeID` of target alter |
-| `networkCanvasEgoUUID` | character | Primary link variable that joins `*_edgeList_tie.csv` back to `*_ego.csv` |
-| `networkCanvasUUID` | character | Unique alter identifier that links `*_attributeList_People.csv` and `*_edgeList_tie.csv` |
-| `networkCanvasSourceUUID` | character | `networkCanvasUUID` of source alter |
-| `networkCanvasTargetUUID` | character | `networkCanvasUUID` of target alter |
+<table style="width:99%;">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 9%" />
+<col style="width: 68%" />
+</colgroup>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>edgeID</code></td>
+<td>integer</td>
+<td>Within-participant edge index</td>
+</tr>
+<tr>
+<td><code>from</code></td>
+<td>integer</td>
+<td><code>nodeID</code> of source alter</td>
+</tr>
+<tr>
+<td><code>to</code></td>
+<td>integer</td>
+<td><code>nodeID</code> of target alter</td>
+</tr>
+<tr>
+<td><code>networkCanvasEgoUUID</code></td>
+<td>character</td>
+<td>Primary link variable that joins <code>*_edgeList_tie.csv</code>
+back to <code>*_ego.csv</code></td>
+</tr>
+<tr>
+<td><code>networkCanvasUUID</code></td>
+<td>character</td>
+<td>Unique alter identifier that links
+<code>*_attributeList_People.csv</code> and
+<code>*_edgeList_tie.csv</code></td>
+</tr>
+<tr>
+<td><code>networkCanvasSourceUUID</code></td>
+<td>character</td>
+<td><code>networkCanvasUUID</code> of source alter</td>
+</tr>
+<tr>
+<td><code>networkCanvasTargetUUID</code></td>
+<td>character</td>
+<td><code>networkCanvasUUID</code> of target alter</td>
+</tr>
+</tbody>
+</table>
 
 **Notes:** `edgeID`, `from`, and `to` are unique only within a
 participant. Ties are undirected; source/target assignment is arbitrary.
@@ -250,18 +430,18 @@ are not independent. They are connected through a small set of **linking
 variables** that allow researchers to reconstruct each participant’s
 personal network and merge information across files.
 
-- **`ego_id`**: participant ID (e.g., `annbea01`) used to link BiNet
-  data with external datasets such as language history questionnaires,
-  behavioral tasks, or demographic records
+-   **`ego_id`**: participant ID (e.g., `annbea01`) used to link BiNet
+    data with external datasets such as language history questionnaires,
+    behavioral tasks, or demographic records
 
-- **`networkCanvasEgoUUID`**: identifies each participant (**ego**)
-  within the Network Canvas system and links all three exported files
+-   **`networkCanvasEgoUUID`**: identifies each participant (**ego**)
+    within the Network Canvas system and links all three exported files
 
-- `networkCanvasUUID`: identifies each nominated person (**alter**)
-  within an ego’s network
+-   `networkCanvasUUID`: identifies each nominated person (**alter**)
+    within an ego’s network
 
-- `networkCanvasSourceUUID` / `networkCanvasTargetUUID`: define tie
-  endpoints to specify the two alters involved in each tie
+-   `networkCanvasSourceUUID` / `networkCanvasTargetUUID`: define tie
+    endpoints to specify the two alters involved in each tie
 
 In short, although BiNet exports multiple files, the linking variables
 ensure they function as **one coherent relational dataset**.
@@ -272,13 +452,11 @@ Network Canvas Documentation: https://documentation.networkcanvas.com/
 
 `egor` package: https://cran.r-project.org/package=egor
 
-`igraph` package: https://igraph.org/r/
-
 ## 0.Setup
 
 ``` r
-packages <- c("dplyr", "tidyr", "stringr", "readr", "igraph", "egor",
-              "janitor", "ggplot2", "scales", "purrr")
+packages <- c("dplyr", "tidyr", "stringr", "readr", "egor",
+              "janitor", "scales", "purrr")
 
 installed_packages <- packages %in% rownames(installed.packages())
 if (any(!installed_packages)) {
@@ -440,7 +618,7 @@ lhq_df <- readr::read_csv(
 ) |>
   dplyr::mutate(
     # Parse the comma-separated language string into a list column.
-    # Used later when computing language homophily (§5.7).
+    # Used later when computing language homophily (§5.6).
     ego_lang_list = stringr::str_split(tolower(ego_lang), ",\\s*")
   )
 
@@ -460,12 +638,12 @@ dplyr::glimpse(lhq_df)
 Three linked datasets are constructed here and used throughout the
 script:
 
-- **`egoData_linked`**: one row per participant; network session
-  variables joined to LHQ variables via `ego_id`
-- **`alterData_linked`**: one row per alter; restricted to participants
-  present in the ego file
-- **`edgelist_linked`**: one row per tie; restricted to participants
-  present in the ego file
+-   **`egoData_linked`**: one row per participant; network session
+    variables joined to LHQ variables via `ego_id`
+-   **`alterData_linked`**: one row per alter; restricted to
+    participants present in the ego file
+-   **`edgelist_linked`**: one row per tie; restricted to participants
+    present in the ego file
 
 ``` r
 # join LHQ variables to ego.csv
@@ -683,7 +861,7 @@ alterData_linked <- alterData_linked |>
   dplyr::mutate(across(all_of(lang_cols), ~ . == "true" | . == TRUE))
 ```
 
-### 2.3 Code-switching (CS) Frequency: Empty String → NA → Numeric
+### 2.3 Codeswitching (CS) Frequency: Empty String → NA → Numeric
 
 Monolingual dyads skip the codeswitching stage; Network Canvas records
 this as an empty string rather than `NA`. Convert to numeric so that
@@ -723,22 +901,46 @@ neither focal language falls into `"Other"`. The functions are
 (`ego_alter_language_` or `alter_language_`) and assign categories based
 solely on the two focal language flags supplied as arguments. Any
 non-focal language is treated as `"Other"`. This means the same function
-works for any bilingual sample by changing `spanish_col` and
-`english_col`.
+works for any bilingual sample by changing `lang1_col` and `lang2_col`.
 
-| lang1 (Spanish) | lang2 (English) | Category            |
-|-----------------|-----------------|---------------------|
-| TRUE            | FALSE           | `"Spanish"`         |
-| FALSE           | TRUE            | `"English"`         |
-| TRUE            | TRUE            | `"Spanish-English"` |
-| FALSE           | FALSE           | `"Other"`           |
+<table>
+<thead>
+<tr>
+<th>lang1 (Spanish)</th>
+<th>lang2 (English)</th>
+<th>Category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TRUE</td>
+<td>FALSE</td>
+<td><code>"Spanish"</code></td>
+</tr>
+<tr>
+<td>FALSE</td>
+<td>TRUE</td>
+<td><code>"English"</code></td>
+</tr>
+<tr>
+<td>TRUE</td>
+<td>TRUE</td>
+<td><code>"Spanish-English"</code></td>
+</tr>
+<tr>
+<td>FALSE</td>
+<td>FALSE</td>
+<td><code>"Other"</code></td>
+</tr>
+</tbody>
+</table>
 
 #### 2.5.1 `languageKnownCategory` — alter’s own language repertoire
 
 *What language(s) does the alter know overall?*
 
 Derived from `alter_language_*`. This variable defines language
-communities among alters and is used in structural measures (§6.3–§6.4).
+communities among alters.
 
 ``` r
 classifyLanguageKnownCategory <- function(df,
@@ -784,7 +986,7 @@ janitor::tabyl(alterData_linked$languageKnownCategory)
 *(What language(s) does the ego speak with this alter?)*
 
 Derived from `ego_alter_language_*`. This variable is the basis for
-compositional measures of codeswitching context (§5.3–§5.5).
+compositional measures of codeswitching context (§5.5).
 
 ``` r
 classifyLanguageUseCategory <- function(df,
@@ -827,7 +1029,8 @@ janitor::tabyl(alterData_linked$languageUsedCategory)
 
 ### 2.6 Sanity Checks for Preprocessed Variables
 
-the key derived variables should exist and have the expected formats
+Verify that the key derived variables should exist and have the expected
+formats
 
 ``` r
 required_vars <- c(
@@ -959,7 +1162,8 @@ All preprocessing is complete. We now save the three preprocessed
 datasets (`egoData_linked`, `alterData_linked`, `edgelist_linked`) to a
 new `preprocessed_data/` folder as a clean checkpoint, so you can reload
 them in future sessions without rerunning Sections 1–2. With the data
-cleaned and saved, we are ready to compute structure-related variables.See the [BiNet Structural Measures Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_Structural_Measures/Language%20Structural%20Measures%20Tutorial.md).
+cleaned and saved, we are ready to compute language-related variables
+(**link**).
 
 ``` r
 # Create output folder (does nothing if it already exists)
@@ -987,7 +1191,7 @@ readr::write_csv(
 cat("Saved preprocessed data to:", normalizePath(output_dir), "\n")
 ```
 
-    Saved preprocessed data to: C:\Users\Zoey\OneDrive - UC San Diego (1)\Documents - Bilingualism in Context Lab\PNS Tutorial\BiNet_preprocessing_compositional_Measures\preprocessed_data 
+    Saved preprocessed data to: /Users/monica/Downloads/BiNet-Tutorial/BiNet_preprocessing_compositional_Measures/preprocessed_data 
 
 ``` r
 cat(" - egoData_linked.csv   (", nrow(egoData_linked),   "rows )\n")
@@ -1052,7 +1256,7 @@ network data that keeps all three levels linked. We use
 nested list columns (`.alts` and `.aaties`) within a single object.
 
 This object is required for `egor::composition()` (§5.4) and
-`egor::as_igraph()` (§6.1).
+`egor::as_igraph()` (in `BiNet_network_visualization.qmd`).
 
 ``` r
 # Color scheme for ego-alter language use categories
@@ -1066,9 +1270,6 @@ lang_colors <- c(
 ```
 
 ``` r
-# languageKnownCategory must be a factor with explicit levels so that
-# egor::clustered_graphs() works correctly even when some levels are absent
-# for a given ego.
 alter_for_egor <- alterData_linked |>
   dplyr::mutate(
     languageKnownCategory = factor(languageKnownCategory,
@@ -1251,7 +1452,7 @@ egoData_linked <- egoData_linked |>
 
 ### 5.5 CS Frequency by Interaction Context
 
-*Does the ego code-switch more in one context than another?*
+*Does the ego codeswitch more in one context than another?*
 
 **Mean CS frequency grouped by the primary context of interaction.**
 When grouped by context, the same CS mean reveals within-ego contextual
@@ -1261,12 +1462,12 @@ variation.
 Not all egos will have alters in every context. For example,
 undergraduate participants may have no alters in the “work” context. In
 such cases:  
-- \`n_context\_\* = 0\` indicates that the ego has no alters in that
+- `n_context_* = 0` indicates that the ego has no alters in that
 context  
-- \`cs_context\_\* = NA\` indicates that the mean cannot be computed due
-to no observations  
-\`0\` reflects absence of ties, whereas \`NA\` reflects an undefined
-summary statistic.
+- `cs_context_* = NA` indicates that the mean cannot be computed due to
+no observations  
+`0` reflects absence of ties, whereas `NA` reflects an undefined summary
+statistic.
 
 ``` r
 # Step 1: compute per-ego × context summaries
@@ -1474,191 +1675,7 @@ egoData_linked |>
     $ n_spanish_homophily     <int> 15, 7, 3, 10, 7, 10, 15, 15, 7
     $ n_english_homophily     <int> 15, 8, 15, 10, 8, 10, 15, 15, 8
 
-## 6. Network Visualization
-
-### 6.1 Ego-Centered Network Plot
-
-Each ego’s network is displayed as an ego-centered network: the ego sits
-at the center, 15 alters are arranged on a surrounding circle, and
-alter-alter ties are drawn as dashed gray lines. Alter node color
-encodes `languageUsedCategory` (*which language(s) the ego uses with
-that alter*) using the `lang_colors` palette from §0.
-
-Three helper functions work together:
-
-- `layout_ego_center()` computes node positions (ego at origin, alters
-  on a circle)
-- `build_ego_igraph()` constructs an igraph object for one ego from
-  `tidy_alter` and `edgelist_linked`, tagging edges as `"ego_edge"` or
-  `"alter_edge"`
-- `plot_ego_network()` calls the above two and renders the plot
-
-``` r
-layout_ego_center <- function(g, ego_name = "ego", radius = 1) {
-  vnames    <- igraph::V(g)$name
-  ego_idx   <- which(vnames == ego_name)
-  alter_idx <- setdiff(seq_along(vnames), ego_idx)
-  m         <- length(alter_idx)
-  ang       <- seq(0, 2 * pi, length.out = m + 1)[-(m + 1)]
-  xy        <- matrix(NA_real_, nrow = igraph::vcount(g), ncol = 2)
-  xy[ego_idx, ]    <- c(0, 0)
-  xy[alter_idx, 1] <- radius * cos(ang)
-  xy[alter_idx, 2] <- radius * sin(ang)
-  xy
-}
-
-build_ego_igraph <- function(ego_uuid, alter_df, edge_df) {
-  alters <- alter_df |>
-    dplyr::filter(networkCanvasEgoUUID == ego_uuid) |>
-    dplyr::mutate(name = as.character(nodeID)) |>
-    dplyr::select(name, dplyr::everything())
-
-  ego_row <- alters[1, ]; ego_row[,] <- NA; ego_row$name <- "ego"
-  alters  <- dplyr::bind_rows(alters, ego_row)
-
-  # Map alter UUIDs to nodeIDs to resolve source/target in the edge file
-  uuid_map <- alter_df |>
-    dplyr::filter(networkCanvasEgoUUID == ego_uuid) |>
-    dplyr::select(networkCanvasUUID, nodeID)
-
-  alter_edges <- edge_df |>
-    dplyr::filter(networkCanvasEgoUUID == ego_uuid) |>
-    dplyr::left_join(uuid_map |>
-                       dplyr::rename(networkCanvasSourceUUID = networkCanvasUUID,
-                                     from_nodeID = nodeID),
-                     by = "networkCanvasSourceUUID") |>
-    dplyr::left_join(uuid_map |>
-                       dplyr::rename(networkCanvasTargetUUID = networkCanvasUUID,
-                                     to_nodeID = nodeID),
-                     by = "networkCanvasTargetUUID") |>
-    dplyr::transmute(from = as.character(from_nodeID),
-                     to   = as.character(to_nodeID),
-                     edge_type = "alter_edge") |>
-    dplyr::filter(!is.na(from), !is.na(to))
-
-  ego_edges <- alters |>
-    dplyr::filter(name != "ego") |>
-    dplyr::transmute(from = "ego", to = name, edge_type = "ego_edge")
-
-  igraph::graph_from_data_frame(
-    d        = dplyr::bind_rows(alter_edges, ego_edges),
-    directed = FALSE,
-    vertices = alters
-  )
-}
-
-plot_ego_network <- function(ego_uuid, alter_df, edge_df, lang_colors,
-                             ego_name = "ego", title = NULL, show_labels = FALSE) {
-  g      <- build_ego_igraph(ego_uuid, alter_df, edge_df)
-  vnames <- igraph::V(g)$name
-  lang   <- igraph::V(g)$languageUsedCategory
-  is_ego <- vnames == ego_name
-
-  vcol          <- rep("gray80", igraph::vcount(g))
-  vcol[!is_ego] <- unname(lang_colors[as.character(lang[!is_ego])])
-  vcol[is.na(vcol)] <- "gray80"
-  vcol[is_ego]  <- "white"
-
-  edge_type <- igraph::E(g)$edge_type
-  lay <- layout_ego_center(g, ego_name = ego_name, radius = 1)
-
-  plot(g, layout = lay,
-       vertex.color = vcol, vertex.size = 18,
-       vertex.frame.color = "black", vertex.frame.width = 8,
-       vertex.label = if (show_labels) vnames else NA,
-       vertex.label.cex = 0.8,
-       edge.color = ifelse(edge_type == "ego_edge", "black", "gray60"),
-       edge.width = 8,
-       edge.lty   = ifelse(edge_type == "ego_edge", 1, 2),
-       main = if (!is.null(title)) title else "",
-       rescale = TRUE, margin = 0)
-
-  present_cats <- sort(unique(stats::na.omit(as.character(lang[!is_ego]))))
-  present_cats <- present_cats[present_cats %in% names(lang_colors)]
-  if (length(present_cats) > 0) {
-    legend("bottom", inset = c(0, -0.12), xpd = TRUE,
-           legend = present_cats,
-           col    = unname(lang_colors[present_cats]),
-           pch = 19, pt.cex = 1.2, bty = "n", cex = 0.75, horiz = TRUE)
-  }
-  invisible(g)
-}
-```
-
-#### Multi-ego panel
-
-**Ego-centered network visualizations of bilingual interactional
-networks.** Each panel represents one participant (ego; white central
-node) and their 15 nominated interaction partners (alters; outer nodes).
-Solid black lines connect the ego to each alter, indicating direct
-ego–alter relationships. Dashed gray lines represent reported ties among
-alters. Alter node color indicates the language(s) the ego uses when
-interacting with that alter:
-
-``` r
-# lang_colors is defined above before build_egor.
-
-# lang_colors <- c(
-#   "Spanish"              = "#D73027",
-#   "English"              = "#2C5F8A",
-#   "Spanish-English"      = "#A8C8E8",
-#   "Other"                = "gray"
-# )
-```
-
-``` r
-n_ego  <- nrow(egoData_linked)
-n_cols <- min(3, n_ego)
-n_rows <- ceiling(n_ego / n_cols)
-par(mfrow = c(n_rows, n_cols), mar = c(0.5, 1.5, 1.5, 0.5))
-
-purrr::walk2(
-  egoData_linked$networkCanvasEgoUUID,
-  egoData_linked$ego_id,
-  ~ plot_ego_network(
-      ego_uuid     = .x,
-      alter_df     = tidy_alter,
-      edge_df      = edgelist_linked,
-      lang_colors = lang_colors,
-      title        = .y
-    )
-)
-```
-
-![](BiNet_preprocessing_tutorial_files/figure-commonmark/multi_ego_panel-1.png)
-
-#### Single-ego plot
-
-``` r
-plot_ego_network(
-  ego_uuid     = egoData_linked$networkCanvasEgoUUID[1],
-  alter_df     = tidy_alter,
-  edge_df      = edgelist_linked,
-  lang_colors = lang_colors,
-  title        = egoData_linked$ego_id[1]
-)
-```
-
-![](BiNet_preprocessing_tutorial_files/figure-commonmark/demo_sociogram-1.png)
-
-## 7. Export Network Plots
-
-``` r
-out_dir <- "./figures_ego_networks"
-dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
-
-for (euuid in egoData_linked$networkCanvasEgoUUID) {
-  ego_label <- egoData_linked$ego_id[egoData_linked$networkCanvasEgoUUID == euuid]
-  jpeg(file.path(out_dir, paste0("ego_network_", ego_label, ".jpg")),
-       width = 15, height = 15, units = "in", res = 300)
-  plot_ego_network(euuid, tidy_alter, edgelist_linked, lang_colors)
-  dev.off()
-}
-
-cat("Saved", nrow(egoData_linked), "network plots to:", out_dir, "\n")
-```
-
-## 8. Save Data Outputs
+## 6. Save Data Outputs
 
 ``` r
 output_dir <- "./Compositional measures"
@@ -1714,7 +1731,7 @@ readr::write_csv(
 cat("Saved to:", normalizePath(output_dir), "\n")
 ```
 
-    Saved to: C:\Users\Zoey\OneDrive - UC San Diego (1)\Documents - Bilingualism in Context Lab\PNS Tutorial\BiNet_preprocessing_compositional_Measures\Compositional measures 
+    Saved to: /Users/monica/Downloads/BiNet-Tutorial/BiNet_preprocessing_compositional_Measures/Compositional measures 
 
 ``` r
 cat("  binet_tidy_alter.csv         —", nrow(tidy_alter), "rows\n")

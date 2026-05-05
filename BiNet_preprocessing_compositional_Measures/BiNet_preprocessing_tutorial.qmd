@@ -10,6 +10,8 @@ format:
     toc-title: "Contents"
     code-overflow: wrap
     embed-resources: true
+  md:
+    toc: true
 editor: visual
 execute:
   echo: true
@@ -989,7 +991,7 @@ egoData_linked |>
   dplyr::glimpse()
 ```
 
-## 7. Save Data Outputs
+## 6. Save Data Outputs
 
 ```{r save_outputs}
 output_dir <- "./Compositional measures"
