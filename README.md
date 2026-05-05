@@ -97,11 +97,11 @@ BiNet_Structural_Measures/
 ### 4. Network Visualization: What does the Network Look Like?
 
 Visualize each ego's network with node color encoding language use and node size encoding ego-alter-level attributes (e.g., emotional closeness,
-interaction frequency). Two plot types are provided: a basic circle layout for quick inspection, and a context-sector layout that spatially groups alters by interaction context (Family, Community, Work, Social, School).
+interaction frequency). Two visualization approaches are provided: a **Basic Network Plot** for quick inspection, and a **Contextualized Network Plot** that spatially groups alters by interaction context (Family, Community, Work, Social, School).
 - **Step 1.** Build ego-centered `igraph` objects from preprocessed alter and edge data
-- **Step 2.** Generate basic sociograms (uniform circle layout, language color encoding)
-- **Step 3.** Generate contextualized sociograms (dynamic sector layout grouping alters by interaction context)
-- **Step 4.** Export publication-quality PNG files for all participants
+- **Step 2.** Generate basic network plots (uniform circle layout, language color encoding)
+- **Step 3.** Generate contextualized network plots (dynamic sector layout grouping alters by interaction context)
+- **Step 4.** Export PNG files for all egos
 
 All visualization functions and export scripts are available in [`BiNet_Network_Visualization/`](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/main/BiNet_Network_Visualization)
 
