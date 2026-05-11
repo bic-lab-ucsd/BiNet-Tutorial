@@ -230,7 +230,7 @@ package <u>**igraph, egor**</u> and the **egoLangBetweenness** package.
 ``` r
 # Install egor package if you never installed this before
 if(!"egor" %in% rownames(installed.packages())) install.packages("egor")
-if(!"igraph" %in% rownames(installed.packages())) install.packages("egor")
+if(!"igraph" %in% rownames(installed.packages())) install.packages("igraph")
 
 library(igraph)
 library(egor)
