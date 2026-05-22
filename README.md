@@ -32,7 +32,7 @@ Clean raw Network Canvas exports, link them with Language History Questionnaire 
 - **Step 1.** Collapsing binary indicator columns into categorical variables
 - **Step 2.** Constructing ego-level compositional measures
 
-The all the cleaning, linking, and compositional analysis of Network Canvas data are available in [`BiNet_preprocessing_compositional_Measures/`](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/main/BiNet_preprocessing_compositional_Measures)
+All the cleaning, linking, and compositional analysis of Network Canvas data are available in [`BiNet_preprocessing_compositional_Measures/`](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/main/BiNet_preprocessing_compositional_Measures)
 
 ```
 BiNet_preprocessing_compositional_Measures/
