@@ -53,7 +53,7 @@ BiNet_preprocessing_compositional_Measures/
 ```
 
  
-### 3. Structural Measures: How the Network is Connected?
+### 3. Structural Measures: How the Network is Connected
  
 Compute network structural measures from the cleaned data, including **Language betweenness**, and the **E-I (External-Internal) index** for assessing language-based compartmentalization or integration in the network.
  
