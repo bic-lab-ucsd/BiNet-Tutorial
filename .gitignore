@@ -1,6 +1,9 @@
 # History files
 .Rhistory
 .Rapp.history
+.DS_Store
+__pycache__/
+*.pyc
 
 # Session Data files
 .RData

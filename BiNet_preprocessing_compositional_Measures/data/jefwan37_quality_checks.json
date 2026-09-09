@@ -1,0 +1,10 @@
+{
+  "participant_id": "jefwan37",
+  "n_alters": 15,
+  "n_edges": 21,
+  "rows_without_exactly_one_context": 0,
+  "rows_without_an_interaction_language": 0,
+  "monolingual_rows_with_cs_rating": 0,
+  "multilingual_rows_without_cs_rating": 0,
+  "n_cs_ratings": 7
+}

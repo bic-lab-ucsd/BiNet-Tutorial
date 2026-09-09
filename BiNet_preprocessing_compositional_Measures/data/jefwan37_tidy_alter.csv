@@ -1,0 +1,16 @@
+participant_id,alter_label,nodeID,languageKnownCategory,languageUsedCategory,interaction_context,emotional_closeness,interaction_frequency,codeswitching_frequency,alter_knows_Mandarin,alter_knows_English,ego_uses_Mandarin,ego_uses_English
+jefwan37,A01,1,Mandarin-English,Mandarin-English,family,4,3,2.0,True,True,True,True
+jefwan37,A02,2,Mandarin,Mandarin,family,4,3,,True,False,True,False
+jefwan37,A03,3,Mandarin-English,English,family,4,3,,True,True,False,True
+jefwan37,A04,4,Mandarin,Mandarin,family,4,3,,True,False,True,False
+jefwan37,A05,5,Mandarin-English,Mandarin-English,social,5,5,4.0,True,True,True,True
+jefwan37,A06,6,English,English,community,5,5,,False,True,False,True
+jefwan37,A07,7,English,English,community,4,5,,False,True,False,True
+jefwan37,A08,8,Mandarin-English,Mandarin-English,community,3,5,4.0,True,True,True,True
+jefwan37,A09,9,Mandarin-English,Mandarin-English,community,2,4,4.0,True,True,True,True
+jefwan37,A10,10,Mandarin-English,Mandarin-English,social,4,5,3.0,True,True,True,True
+jefwan37,A11,11,Mandarin-English,Mandarin-English,social,5,4,4.0,True,True,True,True
+jefwan37,A12,12,Mandarin-English,Mandarin,social,4,4,,True,True,True,False
+jefwan37,A13,13,Mandarin-English,English,social,3,3,,True,True,False,True
+jefwan37,A14,14,Mandarin-English,Mandarin-English,school,3,3,2.0,True,True,True,True
+jefwan37,A15,15,Mandarin-English,English,social,3,2,,True,True,False,True

@@ -1,91 +1,114 @@
-# BiNet-Tutorial
- 
-Tutorial for quantifying bilingual language experience using personal network science methods, including the BiNet (Bilingual Interactional Network) Survey, preprocessing pipeline, compositional measures, and network visualization.
- 
-**[Preprocessing & Compositional Measures Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)** | **[Network Visualization Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_Network_Visualization/BiNet_network_visualization.md)**
- 
-This project is developed in **R**. It covers the BiNet survey, preprocessing of raw [Network Canvas](https://networkcanvas.com/) exports, ego-level compositional measures of bilingual language experience, and network visualization, accompanying the manuscript on the BiNet survey methodology.
- 
-## Quick start
- 
-The tutorial is organized into three components, mirroring the structure of the manuscript.
- 
-### 1. BiNet: Bilingual Interactional Network Survey
+# BiNet Tutorial
 
-The data collection instrument — a Network Canvas protocol that elicits an ego's social network and language use with each alter. 
-The protocol files (both an editable `.netcanvas` version and a PDF summary) are available in [`BiNet_Questionnaire/`](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/main/BiNet_Questionnaire)
+BiNet (Bilingual Interactional Network) combines language-experience measures with personal network methods. This repository contains the survey protocol and a reproducible, real-data walkthrough accompanying the BiNet manuscript.
 
-```
+The code, data, numerical examples, and figures now use one consistent deidentified Mandarin–English respondent, `jefwan37`, throughout. The walkthrough follows the same 15 alters and 21 alter–alter ties from binary survey indicators to compositional measures and network visualization.
+
+## Start here
+
+1. [Preprocessing and compositional measures](BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)
+2. [Network visualization](BiNet_Network_Visualization/BiNet_network_visualization.md)
+3. [BiNet questionnaire](BiNet_Questionnaire/)
+
+The main worked-example results are:
+
+| Quantity | Result |
+|---|---:|
+| Alters | 15 |
+| Alter–alter ties | 21 |
+| Mandarin-only interaction dyads | 3 |
+| English-only interaction dyads | 5 |
+| Mandarin–English interaction dyads | 7 |
+| `cs_global` | 1.53 |
+| `mandarin_global_prop` | 0.20 |
+| `prop_l1_homophily` | 0.67 |
+| `prop_l2_homophily` | 0.80 |
+
+For this respondent, L1 is Mandarin and L2 is English. A bilingual dyad contributes to both L1 and L2 homophily.
+
+## Repository structure
+
+```text
 BiNet_Questionnaire/
-├── NetworkCanvasProtocol_BiNet_20260417 Protocol Summary.pdf  # PDF reference version
-└── NetworkCanvasProtocol_BiNet_20260417.netcanvas             # Editable Network Canvas protocol
-```
- 
-To view or edit the `.netcanvas` file, open it with the [Network Canvas Architect](https://networkcanvas.com/) desktop application.
- 
-### 2. Compositional Measures: What Makes Up the Network?
- 
-Clean raw Network Canvas exports, link them with Language History Questionnaire (LHQ) data, and compute ego-level compositional summaries (e.g., proportion of L1/L2 alters, language diversity). 
+  NetworkCanvasProtocol_BiNet_20260417 Protocol Summary.pdf
+  NetworkCanvasProtocol_BiNet_20260417.netcanvas
 
-**[Open the preprocessing & compositional measures tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)**
- 
-- **Step 1.** Collapsing binary indicator columns into categorical variables
-- **Step 2.** Constructing ego-level compositional measures
-
-All the cleaning, linking, and compositional analysis of Network Canvas data are available in [`BiNet_preprocessing_compositional_Measures/`](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/main/BiNet_preprocessing_compositional_Measures)
-
-```
 BiNet_preprocessing_compositional_Measures/
-├── Network Canvas Export/                  # Raw exports from Network Canvas (demo dataset)
-│   ├── *_ego.csv                           # ego-level data
-│   ├── *_attributeList_People.csv          # alter-level data
-│   └── *_edgeList_tie.csv                  # alter-alter ties
-├── preprocessed_data/                      # Cleaned and linked analysis-ready files
-│   ├── egoData_linked.csv                  # ego-level data joined with LHQ variables
-│   ├── alterData_linked.csv                # cleaned alter-level attributes linked to ego IDs
-│   └── edgelist_linked.csv                 # cleaned alter-alter edge list linked to ego IDs
-├── Compositional measures/                 # Derived ego-level summaries of network composition
-│   ├── binet_ego_compositional.csv         # Final ego-level compositional measures
-│   ├── binet_egoData_linked.csv            # Ego-level dataset joined with compositional variables
-│   └── binet_tidy_alter.csv                # Long-format alter dataset used for aggregation
-├── demo_lhq.csv                            # demo LHQ dataset
-└── BiNet_preprocessing_tutorial.qmd        # Main tutorial (Quarto source)
-```
+  BiNet_preprocessing_tutorial.qmd
+  BiNet_preprocessing_tutorial.md
+  BiNet_preprocessing_tutorial.html
+  code/reproduce_jefwan37_measures.R
+  data/
+    jefwan37_raw_flags.csv
+    jefwan37_tidy_alter.csv
+    jefwan37_alter_edges.csv
+    jefwan37_ego_compositional_wide.csv
+    jefwan37_quality_checks.json
+  figures/
+    fig04_real_input_overview_all_data.png
+    fig05_real_language_recode_jefwan37.png
+    fig06_real_context_recode_jefwan37.png
+    fig07_real_composition_jefwan37.png
+  excel/BiNet_jefwan37_real_data_walkthrough.xlsx
 
- 
-### 3. Network Visualization: What does the Network Look Like?
-
-Visualize each ego's network with node color encoding language use and node size encoding ego-alter-level attributes (e.g., emotional closeness,
-interaction frequency). Two visualization approaches are provided: a **Basic Network Plot** for quick inspection, and a **Contextualized Network Plot** that spatially groups alters by interaction context (Family, Community, Work, Social, School).
-- **Step 1.** Build ego-centered `igraph` objects from preprocessed alter and edge data
-- **Step 2.** Generate basic network plots (uniform circle layout, language color encoding)
-- **Step 3.** Generate contextualized network plots (dynamic sector layout grouping alters by interaction context)
-- **Step 4.** Export PNG files for all egos
-
-All visualization functions and export scripts are available in [`BiNet_Network_Visualization/`](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/main/BiNet_Network_Visualization)
-
-```
 BiNet_Network_Visualization/
-├── figures_ego_networks/               # Exported network plots
-│   ├── basic/                          # Basic circle-layout sociograms (one PNG per participant)
-│   └── sector/                         # Context-sector sociograms (one PNG per participant)
-└── BiNet_network_visualization.qmd     # Visualization tutorial (Quarto source)
+  BiNet_network_visualization.qmd
+  BiNet_network_visualization.md
+  BiNet_network_visualization.html
+  code/generate_jefwan37_network.py
+  figures/fig08_network_views_jefwan37.png
+  requirements.txt
 ```
-> **Prerequisites.** This script loads output files produced by the preprocessing tutorial. Run `BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.qmd` first and confirm that `preprocessed_data/` and `Compositional measures/` are populated before running this script.
 
+The `dataset_overview_*` files in the preprocessing data directory provide the deidentified multi-participant samples displayed in manuscript Figure 4. All participant-level calculations after that overview use `jefwan37`.
+
+## Reproduce the analysis
+
+The R script reads the included tidy alter table, applies the manuscript's analytic decisions, writes the wide ego-level output, and checks the expected values.
+
+```bash
+Rscript BiNet_preprocessing_compositional_Measures/code/reproduce_jefwan37_measures.R
+```
+
+Important coding decisions:
+
+- Mandarin-only and English-only dyads contribute `0` to code-switching means.
+- Mandarin–English dyads retain their reported 1–4 code-switching rating.
+- A context-specific measure is `NA` only when the ego has no alters in that context; if alters are present but none meet a binary criterion, the proportion is `0`.
+- Count-based composition measures use proportion names such as `mandarin_global_prop` and `mandarin_family_prop`.
+- Homophily is mapped to each ego's L1/L2 profile and reported as `prop_l1_homophily` and `prop_l2_homophily`.
+
+## Reproduce the network figure
+
+```bash
+python -m pip install -r BiNet_Network_Visualization/requirements.txt
+python BiNet_Network_Visualization/code/generate_jefwan37_network.py
+```
+
+The generated Figure 8 contains two views of the same observed network:
+
+- Panel A: circular layout, language-use color, constant alter-node size.
+- Panel B: context-organized layout, language-use color, and emotional-closeness node size.
+
+## Questionnaire
+
+The editable Network Canvas protocol and its PDF summary are in [`BiNet_Questionnaire/`](BiNet_Questionnaire/). Open the `.netcanvas` file with [Network Canvas Architect](https://networkcanvas.com/).
+
+## Scope and archive
+
+The current manuscript and `main` branch focus on preprocessing, compositional measures, and visualization. Earlier structural-measure materials are preserved in the Git branch `archive/structural-measures-before-removal-2026-09-09` and can be restored later without reconstructing them.
 
 ## Citation
- 
-If you use these materials in your research, please cite:
- 
-> [Li, J., Shen, Y., Maximous, C. & Beatty-Martínez, A. L. (2026). Bilingual Interactional Network (BiNet) Tutorial: Quantifying bilingual language experience using network science tools [Tutorial]. GitHub. https://github.com/bic-lab-ucsd/BiNet-Tutorial]
- 
-## Contact
-Bilingualism in Context Lab, UC San Diego
-[https://github.com/bic-lab-ucsd](https://github.com/bic-lab-ucsd)
 
-For questions about this tutorial, please contact:
-- **Jiaze Li** — [jil472@ucsd.edu]
-- **Yumeng Shen** — [yus099@ucsd.edu]
-- **Catherine Maximous** — [cmaximous@ucsd.edu]
-- **Anne L. Beatty-Martínez** — [abeattymartinez@ucsd.edu]
+> Li, J., Shen, Y., Maximous, C., & Beatty-Martínez, A. L. (2026). *Bilingual Interactional Network (BiNet) Tutorial: Quantifying bilingual language experience using network science tools* [Tutorial]. https://github.com/bic-lab-ucsd/BiNet-Tutorial
+
+## Contact
+
+Bilingualism in Context Lab, UC San Diego
+
+https://github.com/bic-lab-ucsd
+
+- Jiaze Li — jil472@ucsd.edu
+- Yumeng Shen — yus099@ucsd.edu
+- Catherine Maximous — cmaximous@ucsd.edu
+- Anne L. Beatty-Martínez — abeattymartinez@ucsd.edu

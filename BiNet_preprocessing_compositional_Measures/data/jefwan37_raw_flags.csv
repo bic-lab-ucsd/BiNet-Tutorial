@@ -1,0 +1,16 @@
+participant_id,alter_label,nodeID,household,extended_family,community,school,work,social,alter_knows_Mandarin,alter_knows_English,ego_uses_Mandarin,ego_uses_English,emotional_closeness,interaction_frequency,codeswitching_frequency
+jefwan37,A01,1,True,False,False,False,False,False,True,True,True,True,4,3,2.0
+jefwan37,A02,2,True,False,False,False,False,False,True,False,True,False,4,3,
+jefwan37,A03,3,True,False,False,False,False,False,True,True,False,True,4,3,
+jefwan37,A04,4,False,True,False,False,False,False,True,False,True,False,4,3,
+jefwan37,A05,5,False,False,False,False,False,True,True,True,True,True,5,5,4.0
+jefwan37,A06,6,False,False,True,False,False,False,False,True,False,True,5,5,
+jefwan37,A07,7,False,False,True,False,False,False,False,True,False,True,4,5,
+jefwan37,A08,8,False,False,True,False,False,False,True,True,True,True,3,5,4.0
+jefwan37,A09,9,False,False,True,False,False,False,True,True,True,True,2,4,4.0
+jefwan37,A10,10,False,False,False,False,False,True,True,True,True,True,4,5,3.0
+jefwan37,A11,11,False,False,False,False,False,True,True,True,True,True,5,4,4.0
+jefwan37,A12,12,False,False,False,False,False,True,True,True,True,False,4,4,
+jefwan37,A13,13,False,False,False,False,False,True,True,True,False,True,3,3,
+jefwan37,A14,14,False,False,False,True,False,False,True,True,True,True,3,3,2.0
+jefwan37,A15,15,False,False,False,False,False,True,True,True,False,True,3,2,

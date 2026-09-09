@@ -1,0 +1,5 @@
+ego_id,nodeID,knows_mandarin,knows_english,uses_mandarin,uses_english
+abicha04,1,True,True,False,True
+abicha04,2,True,True,False,True
+agnqiu50,1,False,True,False,True
+agnqiu50,2,True,True,True,True
