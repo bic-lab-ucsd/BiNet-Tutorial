@@ -828,9 +828,7 @@ overall, regardless of which language the ego chooses to use with them.
 This encoding is useful for visualizing the linguistic composition of
 the ego’s social environment — for example, identifying whether the ego
 is surrounded primarily by Spanish-dominant, English-dominant, or
-bilingual alters. This variable is also used in the structural measures
-(E-I index, betweenness centrality) in the BiNet structural analysis
-script.
+bilingual alters.
 
 ### 4.2 Node Size: Emotional Closeness, Interaction Frequency, or CS Frequency
 

@@ -808,7 +808,7 @@ if (nrow(ego_flags) == 0) {
 
 This section recodes variables from their raw Network Canvas export
 format into analysis-ready form. These steps must be completed before
-constructing any compositional or structural measures.
+constructing compositional measures or network visualizations.
 
 ### 2.1 Interaction Context: Dummy Columns → Single Variable
 

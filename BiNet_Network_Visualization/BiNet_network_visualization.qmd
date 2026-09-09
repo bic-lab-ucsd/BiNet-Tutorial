@@ -670,7 +670,7 @@ Both `plot_ego_basic()` and `plot_ego_sector()` accept arguments that remap visu
 
 **`languageUsedCategory`** (default) reflects the language(s) the ego uses with each alter in communication. This is the primary encoding for visualizing the ego's active language behavior across the network.
 
-**`languageKnownCategory`** reflects the language(s) the alter knows overall, regardless of which language the ego chooses to use with them. This encoding is useful for visualizing the linguistic composition of the ego's social environment — for example, identifying whether the ego is surrounded primarily by Spanish-dominant, English-dominant, or bilingual alters. This variable is also used in the structural measures (E-I index, betweenness centrality) in the BiNet structural analysis script.
+**`languageKnownCategory`** reflects the language(s) the alter knows overall, regardless of which language the ego chooses to use with them. This encoding is useful for visualizing the linguistic composition of the ego's social environment — for example, identifying whether the ego is surrounded primarily by Spanish-dominant, English-dominant, or bilingual alters.
 
 ### 4.2 Node Size: Emotional Closeness, Interaction Frequency, or CS Frequency
 

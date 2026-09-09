@@ -1,10 +1,10 @@
 # BiNet-Tutorial
  
-Tutorial for quantifying bilingual language experience using personal network science methods, including the BiNet (Bilingual Interactional Network) Survey, preprocessing pipeline, and tools for computing compositional and structural network measures.
+Tutorial for quantifying bilingual language experience using personal network science methods, including the BiNet (Bilingual Interactional Network) Survey, preprocessing pipeline, compositional measures, and network visualization.
  
-**[Preprocessing & Compositional Measures Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)** | **[Structural Measures Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_Structural_Measures/BiNet%20Structural%20Measures%20Tutorial.md)** 
+**[Preprocessing & Compositional Measures Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)** | **[Network Visualization Tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_Network_Visualization/BiNet_network_visualization.md)**
  
-This project is developed in **R**. It walks through the full pipeline from raw [Network Canvas](https://networkcanvas.com/) exports to ego-level compositional and structural network measures of bilingual language experience, accompanying the manuscript on the BiNet survey methodology.
+This project is developed in **R**. It covers the BiNet survey, preprocessing of raw [Network Canvas](https://networkcanvas.com/) exports, ego-level compositional measures of bilingual language experience, and network visualization, accompanying the manuscript on the BiNet survey methodology.
  
 ## Quick start
  
@@ -53,48 +53,7 @@ BiNet_preprocessing_compositional_Measures/
 ```
 
  
-### 3. Structural Measures: How Is the Network Connected? 
- 
-Compute network structural measures from the cleaned data, including **Language betweenness**, and the **E-I (External-Internal) index** for assessing language-based compartmentalization or integration in the network.
- 
-**[Open the structural measures tutorial](https://github.com/bic-lab-ucsd/BiNet-Tutorial/blob/main/BiNet_Structural_Measures/BiNet%20Structural%20Measures%20Tutorial.md)**
-
-To compute ego-language betweenness, we developed a custom R package, **`egoLangBetweenness`**. You can install it directly from this repo:
- 
-```r
-# Install devtools if you haven't already
-if (!"devtools" %in% rownames(installed.packages())) install.packages("devtools")
- 
-# Install the egoLangBetweenness package from this repo
-devtools::install_github("bic-lab-ucsd/BiNet-Tutorial",
-                        subdir = "BiNet_Structural_Measures/betweenness_package",
-                        force = TRUE)
-```
-
-To help readers build intuition for how ego-language betweenness is computed, we also designed an interactive demo that walks through the calculation step by step: **[Interactive demo: How ego-language betweenness is calculated](https://bic-lab-ucsd.github.io/BiNet-Tutorial/BiNet_Structural_Measures/ego_betweenness_interactive_example.html)**
-
-Structural measure computation, including a custom R package are available in [`BiNet_Structural_Measures/`](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/main/BiNet_Structural_Measures)
-
-```
-BiNet_Structural_Measures/
-├── betweenness_package/                    # R package (egoLangBetweenness) for ego-language betweenness
-│   ├── man/                                # Auto-generated function documentation
-│   ├── R/                                  # R source code files
-│   ├── DESCRIPTION                         # Package metadata (name, version, dependencies)
-│   ├── NAMESPACE                           # Exported/imported function declarations
-│   ├── egoLangBetweenness.Rproj            # RStudio project file
-│   ├── .gitignore                          # Git ignore rules
-│   └── .Rbuildignore                       # R build ignore rules
-├── preprocessed_data/                      # Preprocessed network data files (output from step 2)
-│   ├── egoData_linked.csv
-│   ├── alterData_linked.csv
-│   └── egoData_linked.csv
-├── networkscience_structural_measures.csv  # Saved network structural measures
-├── ego_betweenness_interactive_example.html # Interactive betweenness visualization
-└── Language Structural Measures Tutorial.md # Main tutorial (methodology + usage)
-```
- 
-### 4. Network Visualization: What does the Network Look Like?
+### 3. Network Visualization: What does the Network Look Like?
 
 Visualize each ego's network with node color encoding language use and node size encoding ego-alter-level attributes (e.g., emotional closeness,
 interaction frequency). Two visualization approaches are provided: a **Basic Network Plot** for quick inspection, and a **Contextualized Network Plot** that spatially groups alters by interaction context (Family, Community, Work, Social, School).
