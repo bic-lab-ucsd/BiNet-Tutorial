@@ -9,6 +9,7 @@ The code, data, numerical examples, and figures now use one consistent deidentif
 1. [Preprocessing and compositional measures](BiNet_preprocessing_compositional_Measures/BiNet_preprocessing_tutorial.md)
 2. [Network visualization](BiNet_Network_Visualization/BiNet_network_visualization.md)
 3. [BiNet questionnaire](BiNet_Questionnaire/)
+4. [Structural measures (archived)](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/archive/structural-measures-before-removal-2026-09-09/BiNet_Structural_Measures)
 
 The main worked-example results are:
 
@@ -94,9 +95,11 @@ The generated Figure 8 contains two views of the same observed network:
 
 The editable Network Canvas protocol and its PDF summary are in [`BiNet_Questionnaire/`](BiNet_Questionnaire/). Open the `.netcanvas` file with [Network Canvas Architect](https://networkcanvas.com/).
 
-## Scope and archive
+## Structural measures (archived)
 
-The current manuscript and `main` branch focus on preprocessing, compositional measures, and visualization. Earlier structural-measure materials are preserved in the Git branch `archive/structural-measures-before-removal-2026-09-09` and can be restored later without reconstructing them.
+Compositional measures describe who is in a personal network, whereas structural measures describe how relationships are organized within it. Structural measures can characterize, for example, whether language groups are separated or integrated and whether particular alters bridge them.
+
+Structural measures are outside the scope of the current manuscript walkthrough, so they are not included on `main`. The earlier structural-measures tutorial, R code, custom `egoLangBetweenness` package, example data, and supporting files remain available in the [`archive/structural-measures-before-removal-2026-09-09` branch](https://github.com/bic-lab-ucsd/BiNet-Tutorial/tree/archive/structural-measures-before-removal-2026-09-09/BiNet_Structural_Measures). The archived materials can be restored or updated later without reconstructing them.
 
 ## Citation
 
