@@ -1,131 +1,170 @@
 # Overview
 
-This tutorial visualizes the same deidentified Mandarin–English network used in the manuscript's preprocessing walkthrough. It reproduces manuscript Figure 8 as two complementary views of `jefwan37`: a neutral circular layout (A) and a context-organized layout (B).
+This tutorial visualizes the same deidentified Mandarin–English network
+used in the manuscript’s preprocessing walkthrough. It reproduces
+manuscript Figure 8 as two complementary views of `jefwan37`: a neutral
+circular layout (A) and a context-organized layout (B).
 
-Both panels contain the same 15 alters, the same ego–alter ties, and the same 21 alter–alter ties. Changing the layout does not change the network.
+Both panels contain the same 15 alters, the same ego–alter ties, and the
+same 21 alter–alter ties. Changing the layout does not change the
+network.
 
 ## Visual encodings
 
-| Visual feature | Meaning |
-|---|---|
-| Node color | Reported ego–alter interaction language: Mandarin, English, or Mandarin–English |
-| Node size in A | Constant; emphasizes composition and topology |
-| Node size in B | Emotional closeness |
-| Solid line | Ego–alter tie |
-| Dashed gray line | Alter–alter tie |
-| Position in A | Circular layout without context grouping |
-| Position in B | Interaction context: family, social, community, or school |
+| Visual feature   | Meaning                                                                         |
+|------------------|---------------------------------------------------------------------------------|
+| Node color       | Reported ego–alter interaction language: Mandarin, English, or Mandarin–English |
+| Node size in A   | Constant; emphasizes composition and topology                                   |
+| Node size in B   | Emotional closeness                                                             |
+| Solid line       | Ego–alter tie                                                                   |
+| Dashed gray line | Alter–alter tie                                                                 |
+| Position in A    | Circular layout without context grouping                                        |
+| Position in B    | Interaction context: family, social, community, or school                       |
 
 # 1. Load the included data
 
-The visualization uses the tidy alter table and edge list created in the preprocessing tutorial.
+The visualization uses the tidy alter table and edge list created in the
+preprocessing tutorial.
 
-```python
-from pathlib import Path
-import pandas as pd
+``` r
+data_dir <- file.path(
+  "BiNet_preprocessing_compositional_Measures", "data"
+)
+alters <- read.csv(
+  file.path(data_dir, "jefwan37_tidy_alter.csv"),
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+)
+edges <- read.csv(
+  file.path(data_dir, "jefwan37_alter_edges.csv"),
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+)
 
-repo = Path.cwd()
-data_dir = repo / "BiNet_preprocessing_compositional_Measures" / "data"
-alters = pd.read_csv(data_dir / "jefwan37_tidy_alter.csv")
-edges = pd.read_csv(data_dir / "jefwan37_alter_edges.csv")
-
-assert len(alters) == 15
-assert len(edges) == 21
-assert set(edges.columns) == {"source", "target"}
+stopifnot(
+  nrow(alters) == 15L,
+  nrow(edges) == 21L,
+  all(c("source", "target") %in% names(edges)),
+  all(c(edges$source, edges$target) %in% alters$alter_label)
+)
 ```
 
-The deidentified labels `A01`–`A15` connect the node table and the edge table. They replace names and other direct identifiers.
+The deidentified labels `A01`–`A15` connect the node table and the edge
+table. They replace names and other direct identifiers.
 
 # 2. Choose stable encodings
 
-Use one color dictionary in every figure so that a language category never changes color between panels.
+Use one color dictionary in every figure so that a language category
+never changes color between panels.
 
-```python
-LANGUAGE_COLORS = {
-    "Mandarin": "#E43D30",
-    "English": "#2E628E",
-    "Mandarin-English": "#A9CBE8",
-}
+``` r
+language_colors <- c(
+  "Mandarin" = "#E43D30",
+  "English" = "#2E628E",
+  "Mandarin-English" = "#A9CBE8"
+)
 ```
 
-In this respondent's reported interaction network, the color counts are:
+In this respondent’s reported interaction network, the color counts are:
 
-| Language used | Alters |
-|---|---:|
-| Mandarin | 3 |
-| English | 5 |
-| Mandarin–English | 7 |
+| Language used    | Alters |
+|------------------|-------:|
+| Mandarin         |      3 |
+| English          |      5 |
+| Mandarin–English |      7 |
 
 # 3. Panel A: circular layout
 
-The circular view gives every alter the same visual status. It is useful for inspecting overall language composition and alter–alter connectivity without assigning spatial meaning to context.
+The circular view gives every alter the same visual status. It is useful
+for inspecting overall language composition and alter–alter connectivity
+without assigning spatial meaning to context.
 
-```python
-import math
-
-def circle_positions(labels, radius=0.83):
-    return {
-        label: (
-            radius * math.cos(math.pi / 2 + 2 * math.pi * i / len(labels)),
-            radius * math.sin(math.pi / 2 + 2 * math.pi * i / len(labels)),
-        )
-        for i, label in enumerate(labels)
-    }
+``` r
+circle_positions <- function(labels, radius = 0.83) {
+  angles <- pi / 2 + 2 * pi * (seq_along(labels) - 1) / length(labels)
+  data.frame(
+    alter_label = labels,
+    x = radius * cos(angles),
+    y = radius * sin(angles)
+  )
+}
 ```
 
-All alter nodes are drawn at a constant size in Panel A. Solid ego–alter ties radiate from the center; dashed alter–alter ties come directly from `jefwan37_alter_edges.csv`.
+All alter nodes are drawn at a constant size in Panel A. Solid ego–alter
+ties radiate from the center; dashed alter–alter ties come directly from
+`jefwan37_alter_edges.csv`.
 
 # 4. Panel B: interaction-context layout
 
-The contextualized view moves alters into quadrants based on `interaction_context`. This respondent has no work alters, so no work quadrant is displayed. Node size represents emotional closeness, allowing context, language use, and tie strength to be inspected together.
+The contextualized view moves alters into quadrants based on
+`interaction_context`. This respondent has no work alters, so no work
+quadrant is displayed. Node size represents emotional closeness,
+allowing context, language use, and tie strength to be inspected
+together.
 
-```python
-CONTEXT_RANGES = {
-    "family": (100, 178),
-    "social": (12, 80),
-    "community": (205, 255),
-    "school": (285, 335),
+``` r
+context_positions <- function(alter_data) {
+  ranges <- list(
+    family = c(100, 178), social = c(12, 80),
+    community = c(205, 255), school = c(285, 335)
+  )
+  placed <- lapply(names(ranges), function(context) {
+    labels <- alter_data$alter_label[
+      alter_data$interaction_context == context
+    ]
+    if (!length(labels)) return(NULL)
+    limits <- ranges[[context]]
+    degrees <- if (length(labels) == 1L) mean(limits) else
+      seq(limits[1], limits[2], length.out = length(labels))
+    radius <- rep(c(0.76, 1.05), length.out = length(labels))
+    angles <- degrees * pi / 180
+    data.frame(
+      alter_label = labels,
+      x = radius * cos(angles),
+      y = radius * sin(angles)
+    )
+  })
+  do.call(rbind, placed)
 }
-
-def context_positions(alters):
-    positions = {}
-    for context, (low, high) in CONTEXT_RANGES.items():
-        labels = alters.loc[
-            alters.interaction_context == context, "alter_label"
-        ].tolist()
-        degrees = [(low + high) / 2] if len(labels) == 1 else [
-            low + (high - low) * i / (len(labels) - 1)
-            for i in range(len(labels))
-        ]
-        for i, (label, degree) in enumerate(zip(labels, degrees)):
-            radius = 0.76 if i % 2 == 0 else 1.05
-            angle = math.radians(degree)
-            positions[label] = (
-                radius * math.cos(angle),
-                radius * math.sin(angle),
-            )
-    return positions
 ```
 
-The alternating radii reduce overlap in dense contexts. They are a display choice and do not represent an additional network variable.
+The alternating radii reduce overlap in dense contexts. They are a
+display choice and do not represent an additional network variable.
 
 # 5. Reproduce Figure 8
 
 Run from the repository root:
 
-```bash
-python BiNet_Network_Visualization/code/generate_jefwan37_network.py
+``` bash
+Rscript BiNet_Network_Visualization/code/generate_jefwan37_network.R
 ```
 
-Dependencies are listed in `requirements.txt`. The script validates the node and edge counts before writing `figures/fig08_network_views_jefwan37.png`.
+The script uses base R, validates the node and edge counts, and writes
+`figures/fig08_network_views_jefwan37.png`. No additional package
+installation is required.
 
-![Two views of the observed network for jefwan37. Panel A uses a circular layout and constant alter-node size. Panel B groups alters by interaction context and scales alter-node size by emotional closeness. In both panels, color represents reported interaction language, solid lines represent ego–alter ties, and dashed lines represent alter–alter ties.](figures/fig08_network_views_jefwan37.png)
+<figure>
+<img src="figures/fig08_network_views_jefwan37.png"
+alt="Two views of the observed network for jefwan37. Panel A uses a circular layout and constant alter-node size. Panel B groups alters by interaction context and scales alter-node size by emotional closeness. In both panels, color represents reported interaction language, solid lines represent ego–alter ties, and dashed lines represent alter–alter ties." />
+<figcaption aria-hidden="true">Two views of the observed network for
+jefwan37. Panel A uses a circular layout and constant alter-node size.
+Panel B groups alters by interaction context and scales alter-node size
+by emotional closeness. In both panels, color represents reported
+interaction language, solid lines represent ego–alter ties, and dashed
+lines represent alter–alter ties.</figcaption>
+</figure>
 
 # 6. Adapt the code to another participant
 
-To reuse the script, provide one tidy alter file and one edge file with the same minimum fields:
+To reuse the script, provide one tidy alter file and one edge file with
+the same minimum fields:
 
-- alter table: `participant_id`, `alter_label`, `languageUsedCategory`, `interaction_context`, and `emotional_closeness`;
-- edge table: `source` and `target`, using the alter labels from the node table.
+- alter table: `participant_id`, `alter_label`, `languageUsedCategory`,
+  `interaction_context`, and `emotional_closeness`;
+- edge table: `source` and `target`, using the alter labels from the
+  node table.
 
-Before plotting, verify that every edge endpoint occurs in the alter table, every alter has exactly one analysis context, and each language category has a defined color. Context placement and node-size scaling can then be adjusted without changing the underlying measures.
+Before plotting, verify that every edge endpoint occurs in the alter
+table, every alter has exactly one analysis context, and each language
+category has a defined color. Context placement and node-size scaling
+can then be adjusted without changing the underlying measures.

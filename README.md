@@ -56,9 +56,8 @@ BiNet_Network_Visualization/
   BiNet_network_visualization.qmd
   BiNet_network_visualization.md
   BiNet_network_visualization.html
-  code/generate_jefwan37_network.py
+  code/generate_jefwan37_network.R
   figures/fig08_network_views_jefwan37.png
-  requirements.txt
 ```
 
 The `dataset_overview_*` files in the preprocessing data directory provide the deidentified multi-participant samples displayed in manuscript Figure 4. All participant-level calculations after that overview use `jefwan37`.
@@ -82,9 +81,10 @@ Important coding decisions:
 ## Reproduce the network figure
 
 ```bash
-python -m pip install -r BiNet_Network_Visualization/requirements.txt
-python BiNet_Network_Visualization/code/generate_jefwan37_network.py
+Rscript BiNet_Network_Visualization/code/generate_jefwan37_network.R
 ```
+
+The network figure uses base R and does not require additional packages.
 
 The generated Figure 8 contains two views of the same observed network:
 
