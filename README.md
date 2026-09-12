@@ -41,6 +41,7 @@ BiNet_preprocessing_compositional_Measures/
   code/reproduce_jefwan37_measures.R
   data/
     jefwan37_raw_flags.csv
+    jefwan37_lhq.csv
     jefwan37_tidy_alter.csv
     jefwan37_alter_edges.csv
     jefwan37_ego_compositional_wide.csv
@@ -64,7 +65,7 @@ The `dataset_overview_*` files in the preprocessing data directory provide the d
 
 ## Reproduce the analysis
 
-The R script reads the included tidy alter table, applies the manuscript's analytic decisions, writes the wide ego-level output, and checks the expected values.
+The R script links the included raw alter flags, alter–alter ties, and LHQ language profile; reconstructs and checks the tidy alter table; applies the manuscript's analytic decisions; writes the wide ego-level output; and checks the expected values. The preprocessing tutorial also retains the batch-import and linking workflow for raw Network Canvas ego, alter, and tie exports.
 
 ```bash
 Rscript BiNet_preprocessing_compositional_Measures/code/reproduce_jefwan37_measures.R

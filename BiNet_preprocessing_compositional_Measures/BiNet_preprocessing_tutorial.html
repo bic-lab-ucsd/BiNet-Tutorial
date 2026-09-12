@@ -234,94 +234,211 @@
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#overview" id="toc-overview">Overview</a>
+<li><a href="#overview">Overview</a>
 <ul>
-<li><a href="#files" id="toc-files">Files</a></li>
+<li><a href="#files">Files</a></li>
 </ul></li>
-<li><a href="#1-load-and-audit-the-dyad-data"
-id="toc-1-load-and-audit-the-dyad-data">1. Load and audit the dyad
-data</a></li>
-<li><a href="#2-recode-binary-language-indicators"
-id="toc-2-recode-binary-language-indicators">2. Recode binary language
-indicators</a></li>
-<li><a href="#3-recode-interaction-context"
-id="toc-3-recode-interaction-context">3. Recode interaction
-context</a></li>
-<li><a href="#4-construct-the-tidy-alter-table"
-id="toc-4-construct-the-tidy-alter-table">4. Construct the tidy alter
-table</a></li>
-<li><a href="#5-construct-ego-level-compositional-measures"
-id="toc-5-construct-ego-level-compositional-measures">5. Construct
-ego-level compositional measures</a>
+<li><a href="#understand-and-import-the-source-data">1. Understand and import the source data</a>
 <ul>
-<li><a href="#51-code-switching-means"
-id="toc-51-code-switching-means">5.1 Code-switching means</a></li>
-<li><a href="#52-mandarin-only-interaction-proportions"
-id="toc-52-mandarin-only-interaction-proportions">5.2 Mandarin-only
-interaction proportions</a></li>
-<li><a href="#53-ego-specific-l1l2-homophily"
-id="toc-53-ego-specific-l1l2-homophily">5.3 Ego-specific L1/L2
-homophily</a></li>
-<li><a href="#54-wide-ego-level-output"
-id="toc-54-wide-ego-level-output">5.4 Wide ego-level output</a></li>
+<li><a href="#batch-import-raw-network-canvas-exports">1.1 Batch-import raw Network Canvas exports</a></li>
+<li><a href="#import-the-lhq-and-link-a-full-export">1.2 Import the LHQ and link a full export</a></li>
+<li><a href="#run-the-same-import-and-merge-for-jefwan37">1.3 Run the same import and merge for <code>jefwan37</code></a></li>
 </ul></li>
-<li><a href="#6-expected-results-and-validation"
-id="toc-6-expected-results-and-validation">6. Expected results and
-validation</a></li>
-<li><a href="#7-next-step" id="toc-7-next-step">7. Next step</a></li>
+<li><a href="#recode-binary-language-indicators">2. Recode binary language indicators</a></li>
+<li><a href="#recode-interaction-context">3. Recode interaction context</a></li>
+<li><a href="#construct-the-tidy-alter-table">4. Construct the tidy alter table</a></li>
+<li><a href="#construct-ego-level-compositional-measures">5. Construct ego-level compositional measures</a>
+<ul>
+<li><a href="#code-switching-means">5.1 Code-switching means</a></li>
+<li><a href="#mandarin-only-interaction-proportions">5.2 Mandarin-only interaction proportions</a></li>
+<li><a href="#ego-specific-l1l2-homophily">5.3 Ego-specific L1/L2 homophily</a></li>
+<li><a href="#wide-ego-level-output">5.4 Wide ego-level output</a></li>
+</ul></li>
+<li><a href="#expected-results-and-validation">6. Expected results and validation</a></li>
+<li><a href="#next-step">7. Next step</a></li>
 </ul>
 </nav>
 <h1 id="overview">Overview</h1>
-<p>This tutorial reproduces the Mandarin–English real-data walkthrough
-used in the BiNet manuscript. One deidentified respondent,
-<code>jefwan37</code>, is followed from binary Network Canvas indicators
-to tidy ego–alter data and ego-level compositional measures. The same
-records are used in every table, code block, and figure.</p>
-<p>The respondent nominated 15 alters and 21 alter–alter ties. In
-reported interaction, 3 dyads were Mandarin-only, 5 were English-only,
-and 7 were Mandarin–English. Mandarin is the respondent's L1 and English
-is the respondent's L2.</p>
+<p>This tutorial reproduces the Mandarin–English real-data walkthrough used in the BiNet manuscript. One deidentified respondent, <code>jefwan37</code>, is followed from separate Network Canvas and Language History Questionnaire (LHQ) inputs through file linking, binary-indicator recoding, tidy ego–alter data, and ego-level compositional measures. The same records are used in every runnable example, table, and figure.</p>
+<p>The respondent nominated 15 alters and 21 alter–alter ties. In reported interaction, 3 dyads were Mandarin-only, 5 were English-only, and 7 were Mandarin–English. Mandarin is the respondent’s L1 and English is the respondent’s L2.</p>
 <h2 id="files">Files</h2>
 <ul>
-<li><code>data/jefwan37_raw_flags.csv</code>: deidentified binary
-indicators and dyad ratings.</li>
-<li><code>data/jefwan37_tidy_alter.csv</code>: one row per ego–alter
-dyad after recoding.</li>
-<li><code>data/jefwan37_alter_edges.csv</code>: deidentified alter–alter
-ties.</li>
-<li><code>data/jefwan37_ego_compositional_wide.csv</code>: one-row
-ego-level output.</li>
-<li><code>code/reproduce_jefwan37_measures.R</code>: standalone
-reproduction and validation script.</li>
-<li><code>excel/BiNet_jefwan37_real_data_walkthrough.xlsx</code>:
-inspectable workbook with source, tidy, output, and quality-check
-sheets.</li>
+<li><code>data/jefwan37_raw_flags.csv</code>: deidentified binary indicators and dyad ratings.</li>
+<li><code>data/jefwan37_lhq.csv</code>: deidentified LHQ language profile used in the merge example.</li>
+<li><code>data/jefwan37_tidy_alter.csv</code>: one row per ego–alter dyad after recoding.</li>
+<li><code>data/jefwan37_alter_edges.csv</code>: deidentified alter–alter ties.</li>
+<li><code>data/jefwan37_ego_compositional_wide.csv</code>: one-row ego-level output.</li>
+<li><code>code/reproduce_jefwan37_measures.R</code>: standalone reproduction and validation script.</li>
+<li><code>excel/BiNet_jefwan37_real_data_walkthrough.xlsx</code>: inspectable workbook with source, tidy, output, and quality-check sheets.</li>
 </ul>
 <p>Run the complete analysis from the repository root:</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> BiNet_preprocessing_compositional_Measures/code/reproduce_jefwan37_measures.R</span></code></pre></div>
-<h1 id="1-load-and-audit-the-dyad-data">1. Load and audit the dyad
-data</h1>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>alter <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/jefwan37_tidy_alter.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/jefwan37_alter_edges.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> BiNet_preprocessing_compositional_Measures/code/reproduce_jefwan37_measures.R</span></code></pre></div>
+<h1 id="understand-and-import-the-source-data">1. Understand and import the source data</h1>
+<p>BiNet data have linked ego, alter, and alter–alter tie levels. LHQ variables are collected outside Network Canvas and then joined at the ego level.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Unit of observation</th>
+<th>Link variables</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>*_ego.csv</code></td>
+<td>One row per participant</td>
+<td><code>ego_id</code>, <code>networkCanvasEgoUUID</code></td>
+</tr>
+<tr class="even">
+<td><code>*_attributeList_People.csv</code></td>
+<td>One row per nominated alter</td>
+<td><code>networkCanvasEgoUUID</code>, <code>networkCanvasUUID</code>, <code>nodeID</code></td>
+</tr>
+<tr class="odd">
+<td><code>*_edgeList_tie.csv</code></td>
+<td>One row per alter–alter tie</td>
+<td><code>networkCanvasEgoUUID</code>, source and target alter identifiers</td>
+</tr>
+<tr class="even">
+<td>LHQ file</td>
+<td>One row per participant</td>
+<td>Study participant ID matching <code>ego_id</code></td>
+</tr>
+</tbody>
+</table>
+<p>In a full Network Canvas export, <code>networkCanvasEgoUUID</code> links all files belonging to one ego, and alter UUIDs identify the endpoints of each alter–alter tie. The LHQ participant ID must be standardized to the same type and name as <code>ego_id</code> before joining. In the published <code>jefwan37</code> walkthrough, direct system identifiers are replaced by <code>participant_id</code> and deidentified alter labels <code>A01</code>–<code>A15</code>.</p>
+<h2 id="batch-import-raw-network-canvas-exports">1.1 Batch-import raw Network Canvas exports</h2>
+<p>Network Canvas exports one set of three CSV files per participant. Keep all participants’ files in one folder. The retained import pattern below reads each level and stacks files across participants. It is a template for a study’s unredacted export directory, so it is not executed against this public repository.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="st">&quot;./Network Canvas Export&quot;</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(alter) <span class="sc">==</span> <span class="dv">15</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(edges) <span class="sc">==</span> <span class="dv">21</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(alter<span class="sc">$</span>participant_id <span class="sc">==</span> <span class="st">&quot;jefwan37&quot;</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
-<p>The checks establish the denominator before aggregation. This matters
-because proportions and means are interpretable only when the eligible
-rows are known.</p>
-<p><img src="figures/fig04_real_input_overview_all_data.png"
-alt="Three linked input levels: ego, alter/ego–alter, and alter–alter tie records." /></p>
-<h1 id="2-recode-binary-language-indicators">2. Recode binary language
-indicators</h1>
-<p>Network Canvas exports one Boolean column for each language. Two
-paired indicators become one categorical variable:</p>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>data_alter <span class="ot">&lt;-</span> data_dir <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(<span class="at">full.names =</span> <span class="cn">TRUE</span>, <span class="at">pattern =</span> <span class="st">&quot;attributeList_People</span><span class="sc">\\</span><span class="st">.csv$&quot;</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(readr<span class="sc">::</span>read_csv, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>()</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>data_ego <span class="ot">&lt;-</span> data_dir <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(<span class="at">full.names =</span> <span class="cn">TRUE</span>, <span class="at">pattern =</span> <span class="st">&quot;_ego</span><span class="sc">\\</span><span class="st">.csv$&quot;</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(readr<span class="sc">::</span>read_csv, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>()</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>data_edgelist <span class="ot">&lt;-</span> data_dir <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(<span class="at">full.names =</span> <span class="cn">TRUE</span>, <span class="at">pattern =</span> <span class="st">&quot;edgeList_tie</span><span class="sc">\\</span><span class="st">.csv$&quot;</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(readr<span class="sc">::</span>read_csv, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>()</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Loaded&quot;</span>, <span class="fu">nrow</span>(data_ego), <span class="st">&quot;egos,&quot;</span>,</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(data_alter), <span class="st">&quot;alters, and&quot;</span>,</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(data_edgelist), <span class="st">&quot;alter-alter ties.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Column names vary when a protocol changes. Audit the link fields before any join. This reusable check catches a missing identifier without requiring every study to use an identical set of language or demographic columns.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>check_columns <span class="ot">&lt;-</span> <span class="cf">function</span>(data, required, label) {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  missing <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(required, <span class="fu">names</span>(data))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(missing)) {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(label, <span class="st">&quot; is missing: &quot;</span>, <span class="fu">paste</span>(missing, <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(label, <span class="st">&quot;: &quot;</span>, <span class="fu">nrow</span>(data), <span class="st">&quot; rows; required columns present&quot;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(data)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">check_columns</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  data_ego,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;ego_id&quot;</span>, <span class="st">&quot;networkCanvasEgoUUID&quot;</span>),</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Ego export&quot;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">check_columns</span>(</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  data_alter,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;networkCanvasEgoUUID&quot;</span>, <span class="st">&quot;networkCanvasUUID&quot;</span>, <span class="st">&quot;nodeID&quot;</span>),</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Alter export&quot;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">check_columns</span>(</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  data_edgelist,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;networkCanvasEgoUUID&quot;</span>, <span class="st">&quot;networkCanvasSourceUUID&quot;</span>, <span class="st">&quot;networkCanvasTargetUUID&quot;</span>),</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Tie export&quot;</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<h2 id="import-the-lhq-and-link-a-full-export">1.2 Import the LHQ and link a full export</h2>
+<p>Read the LHQ separately, standardize its participant identifier, and join its ego-level variables to the Network Canvas ego file. <code>semi_join()</code> then restricts alter and tie records to egos retained in the linked ego table. Replace <code>participant_id</code> in the <code>rename()</code> call if the LHQ uses another ID column.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>lhq_df <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&quot;data/lhq.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">ego_id =</span> participant_id) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>egoData_linked <span class="ot">&lt;-</span> data_ego <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id)) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(lhq_df, <span class="at">by =</span> <span class="st">&quot;ego_id&quot;</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>alterData_linked <span class="ot">&lt;-</span> data_alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">semi_join</span>(</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    egoData_linked <span class="sc">|</span><span class="er">&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(networkCanvasEgoUUID),</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">&quot;networkCanvasEgoUUID&quot;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>edgelist_linked <span class="ot">&lt;-</span> data_edgelist <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">semi_join</span>(</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    egoData_linked <span class="sc">|</span><span class="er">&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(networkCanvasEgoUUID),</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">&quot;networkCanvasEgoUUID&quot;</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>Use <code>left_join()</code> for the LHQ merge so every Network Canvas ego remains visible even if its questionnaire row is missing. Check the result immediately rather than allowing an unmatched LHQ record to become an unnoticed block of missing variables.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(egoData_linked) <span class="sc">==</span> dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(egoData_linked<span class="sc">$</span>networkCanvasEgoUUID),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(alterData_linked<span class="sc">$</span>networkCanvasEgoUUID <span class="sc">%in%</span> egoData_linked<span class="sc">$</span>networkCanvasEgoUUID),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(edgelist_linked<span class="sc">$</span>networkCanvasEgoUUID <span class="sc">%in%</span> egoData_linked<span class="sc">$</span>networkCanvasEgoUUID)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>unmatched_lhq <span class="ot">&lt;-</span> egoData_linked <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="fu">is.na</span>(ego_l1) <span class="sc">|</span> <span class="fu">is.na</span>(ego_l2)) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ego_id)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">nrow</span>(unmatched_lhq)) {</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">&quot;Some Network Canvas egos did not match an LHQ row.&quot;</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="run-the-same-import-and-merge-for-jefwan37">1.3 Run the same import and merge for <code>jefwan37</code></h2>
+<p>The public walkthrough uses flattened, deidentified files instead of publishing raw Network Canvas UUIDs. The linking logic is unchanged: <code>participant_id</code> connects the LHQ and alter tables, while <code>alter_label</code> connects the alter and edge tables.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>lhq_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/jefwan37_lhq.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>data_alter <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/jefwan37_raw_flags.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>data_edgelist <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/jefwan37_alter_edges.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">participant_id =</span> <span class="st">&quot;jefwan37&quot;</span>, <span class="at">.before =</span> source)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>data_ego <span class="ot">&lt;-</span> data_alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(participant_id)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>egoData_linked <span class="ot">&lt;-</span> data_ego <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(lhq_df, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>alterData_linked <span class="ot">&lt;-</span> data_alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(egoData_linked, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>edgelist_linked <span class="ot">&lt;-</span> data_edgelist <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(egoData_linked, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(egoData_linked) <span class="sc">==</span> <span class="dv">1</span>,</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(alterData_linked) <span class="sc">==</span> <span class="dv">15</span>,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(edgelist_linked) <span class="sc">==</span> <span class="dv">21</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">anyDuplicated</span>(alterData_linked<span class="sc">$</span>alter_label),</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(<span class="fu">c</span>(edgelist_linked<span class="sc">$</span>source, edgelist_linked<span class="sc">$</span>target) <span class="sc">%in%</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>        alterData_linked<span class="sc">$</span>alter_label),</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">anyNA</span>(egoData_linked[<span class="fu">c</span>(<span class="st">&quot;ego_l1&quot;</span>, <span class="st">&quot;ego_l2&quot;</span>)])</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>The checks confirm a one-row LHQ merge, 15 linked alters, 21 linked ties, unique alter labels, and valid edge endpoints. They establish the denominator before aggregation and catch ID problems before measures are calculated.</p>
+<figure>
+<img src="figures/fig04_real_input_overview_all_data.png" alt="Three linked input levels: ego, alter/ego–alter, and alter–alter tie records." /><figcaption aria-hidden="true">Three linked input levels: ego, alter/ego–alter, and alter–alter tie records.</figcaption>
+</figure>
+<h1 id="recode-binary-language-indicators">2. Recode binary language indicators</h1>
+<p>Network Canvas exports one Boolean column for each language. Two paired indicators become one categorical variable:</p>
 <table>
 <thead>
 <tr class="header">
@@ -353,180 +470,142 @@ paired indicators become one categorical variable:</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>alter <span class="ot">&lt;-</span> alter <span class="sc">|&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">languageKnownCategory =</span> <span class="fu">case_when</span>(</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      alter_knows_Mandarin <span class="sc">&amp;</span> alter_knows_English <span class="sc">~</span> <span class="st">&quot;Mandarin-English&quot;</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      alter_knows_Mandarin <span class="sc">~</span> <span class="st">&quot;Mandarin&quot;</span>,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      alter_knows_English <span class="sc">~</span> <span class="st">&quot;English&quot;</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;Other&quot;</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">languageUsedCategory =</span> <span class="fu">case_when</span>(</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>      ego_uses_Mandarin <span class="sc">&amp;</span> ego_uses_English <span class="sc">~</span> <span class="st">&quot;Mandarin-English&quot;</span>,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>      ego_uses_Mandarin <span class="sc">~</span> <span class="st">&quot;Mandarin&quot;</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      ego_uses_English <span class="sc">~</span> <span class="st">&quot;English&quot;</span>,</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;Other&quot;</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
-<p><code>languageKnownCategory</code> describes the alter's repertoire.
-<code>languageUsedCategory</code> describes the language(s) the ego
-reports using with that alter. They answer different questions and
-should not be substituted for one another.</p>
-<p><img src="figures/fig05_real_language_recode_jefwan37.png"
-alt="Binary Mandarin/English indicators recoded into language-known and language-used categories." /></p>
-<h1 id="3-recode-interaction-context">3. Recode interaction context</h1>
-<p>The protocol stores contexts in separate indicator columns. Household
-and extended family are combined into <code>family</code>; the other
-occupied contexts remain <code>community</code>, <code>school</code>,
-<code>work</code>, and <code>social</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>raw <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/jefwan37_raw_flags.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>raw <span class="ot">&lt;-</span> raw <span class="sc">|&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">interaction_context =</span> <span class="fu">case_when</span>(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      household <span class="sc">|</span> extended_family <span class="sc">~</span> <span class="st">&quot;family&quot;</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      community <span class="sc">~</span> <span class="st">&quot;community&quot;</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      school <span class="sc">~</span> <span class="st">&quot;school&quot;</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      work <span class="sc">~</span> <span class="st">&quot;work&quot;</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      social <span class="sc">~</span> <span class="st">&quot;social&quot;</span>,</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>context_flags <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;household&quot;</span>, <span class="st">&quot;extended_family&quot;</span>, <span class="st">&quot;community&quot;</span>, <span class="st">&quot;school&quot;</span>, <span class="st">&quot;work&quot;</span>, <span class="st">&quot;social&quot;</span>)</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all</span>(<span class="fu">rowSums</span>(<span class="fu">as.data.frame</span>(raw[context_flags])) <span class="sc">==</span> <span class="dv">1</span>))</span></code></pre></div>
-<p>The mutually exclusive check prevents one dyad from silently entering
-more than one context summary. In this network, family has 4 alters,
-community 4, social 6, school 1, and work 0.</p>
-<p><img src="figures/fig06_real_context_recode_jefwan37.png"
-alt="Binary context indicators recoded into one interaction-context variable." /></p>
-<h1 id="4-construct-the-tidy-alter-table">4. Construct the tidy alter
-table</h1>
-<p>The analysis table keeps one row per ego–alter dyad. It contains
-stable identifiers, the two derived language variables, one context
-variable, continuous dyad ratings, and the language flags needed for
-L1/L2 homophily.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tidy_alter <span class="ot">&lt;-</span> alter <span class="sc">|&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    participant_id, alter_label, nodeID,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    languageKnownCategory, languageUsedCategory, interaction_context,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    emotional_closeness, interaction_frequency, codeswitching_frequency,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    alter_knows_Mandarin, alter_knows_English,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    ego_uses_Mandarin, ego_uses_English</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
-<h1 id="5-construct-ego-level-compositional-measures">5. Construct
-ego-level compositional measures</h1>
-<h2 id="51-code-switching-means">5.1 Code-switching means</h2>
-<p>The questionnaire asks for code-switching frequency only when more
-than one interaction language is selected. For the manuscript analysis,
-a Mandarin-only or English-only dyad contributes a genuine
-<code>0</code>; a Mandarin–English dyad retains its reported 1–4 rating.
-This rule keeps all 15 nominated alters in the network-wide
-denominator.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>alter <span class="ot">&lt;-</span> alter <span class="sc">|&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_zero_coded =</span> <span class="fu">case_when</span>(</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>      languageUsedCategory <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Mandarin&quot;</span>, <span class="st">&quot;English&quot;</span>) <span class="sc">~</span> <span class="dv">0</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>      languageUsedCategory <span class="sc">==</span> <span class="st">&quot;Mandarin-English&quot;</span> <span class="sc">~</span> codeswitching_frequency,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_real_</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
-<p>Do not use <code>mean(codeswitching_frequency, na.rm = TRUE)</code>
-for this analysis: that would average only the 7 bilingual dyads and
-would answer a different question.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mean_or_na <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  observed <span class="ot">&lt;-</span> x[<span class="sc">!</span><span class="fu">is.na</span>(x)]</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(observed) <span class="sc">==</span> <span class="dv">0</span><span class="dt">L</span>) <span class="cn">NA_real_</span> <span class="cf">else</span> <span class="fu">mean</span>(observed)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>context_mean <span class="ot">&lt;-</span> <span class="cf">function</span>(values, contexts, target) {</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_or_na</span>(values[contexts <span class="sc">==</span> target])</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>cs_measures <span class="ot">&lt;-</span> alter <span class="sc">|&gt;</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(participant_id) <span class="sc">|&gt;</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_global =</span> <span class="fu">mean_or_na</span>(cs_zero_coded),</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_family =</span> <span class="fu">context_mean</span>(cs_zero_coded, interaction_context, <span class="st">&quot;family&quot;</span>),</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_community =</span> <span class="fu">context_mean</span>(cs_zero_coded, interaction_context, <span class="st">&quot;community&quot;</span>),</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_social =</span> <span class="fu">context_mean</span>(cs_zero_coded, interaction_context, <span class="st">&quot;social&quot;</span>),</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_school =</span> <span class="fu">context_mean</span>(cs_zero_coded, interaction_context, <span class="st">&quot;school&quot;</span>),</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
-<p>For <code>jefwan37</code>, <code>cs_global = 1.53</code>. Context
-means are 0.50 for family, 2.00 for community, 1.83 for social, and 2.00
-for school. A context with no alters has no denominator and is
-<code>NA</code>, not zero.</p>
-<h2 id="52-mandarin-only-interaction-proportions">5.2 Mandarin-only
-interaction proportions</h2>
-<p>Count-based composition measures are named as proportions. Here an
-alter contributes 1 only when the dyad's reported interaction is
-Mandarin-only; Mandarin–English dyads are not counted as
-Mandarin-only.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>context_prop <span class="ot">&lt;-</span> <span class="cf">function</span>(flags, contexts, target) {</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_or_na</span>(flags[contexts <span class="sc">==</span> target])</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>mandarin_measures <span class="ot">&lt;-</span> alter <span class="sc">|&gt;</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(participant_id) <span class="sc">|&gt;</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">mandarin_global_prop =</span> <span class="fu">mean_or_na</span>(languageUsedCategory <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span>),</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">mandarin_family_prop =</span> <span class="fu">context_prop</span>(languageUsedCategory <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span>, interaction_context, <span class="st">&quot;family&quot;</span>),</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">mandarin_community_prop =</span> <span class="fu">context_prop</span>(languageUsedCategory <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span>, interaction_context, <span class="st">&quot;community&quot;</span>),</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">mandarin_social_prop =</span> <span class="fu">context_prop</span>(languageUsedCategory <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span>, interaction_context, <span class="st">&quot;social&quot;</span>),</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
-<p>If a respondent has alters in a context but none meet the criterion,
-the proportion is <code>0</code>. Only a context with no alters is
-<code>NA</code>.</p>
-<h2 id="53-ego-specific-l1l2-homophily">5.3 Ego-specific L1/L2
-homophily</h2>
-<p>Language homophily must be mapped to each ego's language profile
-rather than tied permanently to Mandarin or English. For this
-respondent, L1 is Mandarin and L2 is English. A bilingual dyad
-contributes to both L1 and L2 homophily.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ego_profile <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">participant_id =</span> <span class="st">&quot;jefwan37&quot;</span>,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ego_l1 =</span> <span class="st">&quot;Mandarin&quot;</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ego_l2 =</span> <span class="st">&quot;English&quot;</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>alter_profiled <span class="ot">&lt;-</span> alter <span class="sc">|&gt;</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(ego_profile, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">l1_match =</span> <span class="fu">case_when</span>(</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>      ego_l1 <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span> <span class="sc">~</span> ego_uses_Mandarin,</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>      ego_l1 <span class="sc">==</span> <span class="st">&quot;English&quot;</span> <span class="sc">~</span> ego_uses_English,</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">l2_match =</span> <span class="fu">case_when</span>(</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>      ego_l2 <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span> <span class="sc">~</span> ego_uses_Mandarin,</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>      ego_l2 <span class="sc">==</span> <span class="st">&quot;English&quot;</span> <span class="sc">~</span> ego_uses_English,</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>homophily <span class="ot">&lt;-</span> alter_profiled <span class="sc">|&gt;</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(participant_id, ego_l1, ego_l2) <span class="sc">|&gt;</span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop_l1_homophily =</span> <span class="fu">mean_or_na</span>(l1_match),</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop_l2_homophily =</span> <span class="fu">mean_or_na</span>(l2_match),</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
-<p>Ten of 15 alters are used with Mandarin, so
-<code>prop_l1_homophily = 0.67</code>. Twelve of 15 are used with
-English, so <code>prop_l2_homophily = 0.80</code>.</p>
-<h2 id="54-wide-ego-level-output">5.4 Wide ego-level output</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ego_compositional <span class="ot">&lt;-</span> cs_measures <span class="sc">|&gt;</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(mandarin_measures, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(homophily, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(ego_compositional, <span class="st">&quot;data/jefwan37_ego_compositional_wide.csv&quot;</span>)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>ego_compositional</span></code></pre></div>
-<p><img src="figures/fig07_real_composition_jefwan37.png"
-alt="Tidy dyad records aggregated to one wide row of ego-level compositional measures." /></p>
-<h1 id="6-expected-results-and-validation">6. Expected results and
-validation</h1>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>alter <span class="ot">&lt;-</span> alterData_linked <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">languageKnownCategory =</span> <span class="fu">case_when</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>      alter_knows_Mandarin <span class="sc">&amp;</span> alter_knows_English <span class="sc">~</span> <span class="st">&quot;Mandarin-English&quot;</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>      alter_knows_Mandarin <span class="sc">~</span> <span class="st">&quot;Mandarin&quot;</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>      alter_knows_English <span class="sc">~</span> <span class="st">&quot;English&quot;</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;Other&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">languageUsedCategory =</span> <span class="fu">case_when</span>(</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>      ego_uses_Mandarin <span class="sc">&amp;</span> ego_uses_English <span class="sc">~</span> <span class="st">&quot;Mandarin-English&quot;</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>      ego_uses_Mandarin <span class="sc">~</span> <span class="st">&quot;Mandarin&quot;</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>      ego_uses_English <span class="sc">~</span> <span class="st">&quot;English&quot;</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;Other&quot;</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p><code>languageKnownCategory</code> describes the alter’s repertoire. <code>languageUsedCategory</code> describes the language(s) the ego reports using with that alter. They answer different questions and should not be substituted for one another.</p>
+<figure>
+<img src="figures/fig05_real_language_recode_jefwan37.png" alt="Binary Mandarin/English indicators recoded into language-known and language-used categories." /><figcaption aria-hidden="true">Binary Mandarin/English indicators recoded into language-known and language-used categories.</figcaption>
+</figure>
+<h1 id="recode-interaction-context">3. Recode interaction context</h1>
+<p>The protocol stores contexts in separate indicator columns. Household and extended family are combined into <code>family</code>; the other occupied contexts remain <code>community</code>, <code>school</code>, <code>work</code>, and <code>social</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>alter <span class="ot">&lt;-</span> alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">interaction_context =</span> <span class="fu">case_when</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>      household <span class="sc">|</span> extended_family <span class="sc">~</span> <span class="st">&quot;family&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>      community <span class="sc">~</span> <span class="st">&quot;community&quot;</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>      school <span class="sc">~</span> <span class="st">&quot;school&quot;</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>      work <span class="sc">~</span> <span class="st">&quot;work&quot;</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>      social <span class="sc">~</span> <span class="st">&quot;social&quot;</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>context_flags <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;household&quot;</span>, <span class="st">&quot;extended_family&quot;</span>, <span class="st">&quot;community&quot;</span>, <span class="st">&quot;school&quot;</span>, <span class="st">&quot;work&quot;</span>, <span class="st">&quot;social&quot;</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all</span>(<span class="fu">rowSums</span>(<span class="fu">as.data.frame</span>(alter[context_flags])) <span class="sc">==</span> <span class="dv">1</span>))</span></code></pre></div>
+<p>The mutually exclusive check prevents one dyad from silently entering more than one context summary. In this network, family has 4 alters, community 4, social 6, school 1, and work 0.</p>
+<figure>
+<img src="figures/fig06_real_context_recode_jefwan37.png" alt="Binary context indicators recoded into one interaction-context variable." /><figcaption aria-hidden="true">Binary context indicators recoded into one interaction-context variable.</figcaption>
+</figure>
+<h1 id="construct-the-tidy-alter-table">4. Construct the tidy alter table</h1>
+<p>The analysis table keeps one row per ego–alter dyad. It contains stable identifiers, the two derived language variables, one context variable, continuous dyad ratings, and the language flags needed for L1/L2 homophily.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>tidy_alter <span class="ot">&lt;-</span> alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    participant_id, alter_label, nodeID,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    languageKnownCategory, languageUsedCategory, interaction_context,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    emotional_closeness, interaction_frequency, codeswitching_frequency,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    alter_knows_Mandarin, alter_knows_English,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    ego_uses_Mandarin, ego_uses_English</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<h1 id="construct-ego-level-compositional-measures">5. Construct ego-level compositional measures</h1>
+<h2 id="code-switching-means">5.1 Code-switching means</h2>
+<p>The questionnaire asks for code-switching frequency only when more than one interaction language is selected. For the manuscript analysis, a Mandarin-only or English-only dyad contributes a genuine <code>0</code>; a Mandarin–English dyad retains its reported 1–4 rating. This rule keeps all 15 nominated alters in the network-wide denominator.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>alter <span class="ot">&lt;-</span> alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_zero_coded =</span> <span class="fu">case_when</span>(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>      languageUsedCategory <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Mandarin&quot;</span>, <span class="st">&quot;English&quot;</span>) <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>      languageUsedCategory <span class="sc">==</span> <span class="st">&quot;Mandarin-English&quot;</span> <span class="sc">~</span> codeswitching_frequency,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_real_</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>Do not use <code>mean(codeswitching_frequency, na.rm = TRUE)</code> for this analysis: that would average only the 7 bilingual dyads and would answer a different question.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mean_or_na <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  observed <span class="ot">&lt;-</span> x[<span class="sc">!</span><span class="fu">is.na</span>(x)]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(observed) <span class="sc">==</span> 0L) <span class="cn">NA_real_</span> <span class="cf">else</span> <span class="fu">mean</span>(observed)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>context_mean <span class="ot">&lt;-</span> <span class="cf">function</span>(values, contexts, target) {</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_or_na</span>(values[contexts <span class="sc">==</span> target])</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>cs_measures <span class="ot">&lt;-</span> alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(participant_id) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_global =</span> <span class="fu">mean_or_na</span>(cs_zero_coded),</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_family =</span> <span class="fu">context_mean</span>(cs_zero_coded, interaction_context, <span class="st">&quot;family&quot;</span>),</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_community =</span> <span class="fu">context_mean</span>(cs_zero_coded, interaction_context, <span class="st">&quot;community&quot;</span>),</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_social =</span> <span class="fu">context_mean</span>(cs_zero_coded, interaction_context, <span class="st">&quot;social&quot;</span>),</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">cs_school =</span> <span class="fu">context_mean</span>(cs_zero_coded, interaction_context, <span class="st">&quot;school&quot;</span>),</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>For <code>jefwan37</code>, <code>cs_global = 1.53</code>. Context means are 0.50 for family, 2.00 for community, 1.83 for social, and 2.00 for school. A context with no alters has no denominator and is <code>NA</code>, not zero.</p>
+<h2 id="mandarin-only-interaction-proportions">5.2 Mandarin-only interaction proportions</h2>
+<p>Count-based composition measures are named as proportions. Here an alter contributes 1 only when the dyad’s reported interaction is Mandarin-only; Mandarin–English dyads are not counted as Mandarin-only.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>context_prop <span class="ot">&lt;-</span> <span class="cf">function</span>(flags, contexts, target) {</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_or_na</span>(flags[contexts <span class="sc">==</span> target])</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>mandarin_measures <span class="ot">&lt;-</span> alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(participant_id) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">mandarin_global_prop =</span> <span class="fu">mean_or_na</span>(languageUsedCategory <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span>),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">mandarin_family_prop =</span> <span class="fu">context_prop</span>(languageUsedCategory <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span>, interaction_context, <span class="st">&quot;family&quot;</span>),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">mandarin_community_prop =</span> <span class="fu">context_prop</span>(languageUsedCategory <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span>, interaction_context, <span class="st">&quot;community&quot;</span>),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">mandarin_social_prop =</span> <span class="fu">context_prop</span>(languageUsedCategory <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span>, interaction_context, <span class="st">&quot;social&quot;</span>),</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>If a respondent has alters in a context but none meet the criterion, the proportion is <code>0</code>. Only a context with no alters is <code>NA</code>.</p>
+<h2 id="ego-specific-l1l2-homophily">5.3 Ego-specific L1/L2 homophily</h2>
+<p>Language homophily must be mapped to each ego’s language profile rather than tied permanently to Mandarin or English. For this respondent, L1 is Mandarin and L2 is English. A bilingual dyad contributes to both L1 and L2 homophily.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ego_profile <span class="ot">&lt;-</span> egoData_linked <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(participant_id, ego_l1, ego_l2)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>alter_profiled <span class="ot">&lt;-</span> alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(ego_profile, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">l1_match =</span> <span class="fu">case_when</span>(</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>      ego_l1 <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span> <span class="sc">~</span> ego_uses_Mandarin,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>      ego_l1 <span class="sc">==</span> <span class="st">&quot;English&quot;</span> <span class="sc">~</span> ego_uses_English,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">l2_match =</span> <span class="fu">case_when</span>(</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>      ego_l2 <span class="sc">==</span> <span class="st">&quot;Mandarin&quot;</span> <span class="sc">~</span> ego_uses_Mandarin,</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>      ego_l2 <span class="sc">==</span> <span class="st">&quot;English&quot;</span> <span class="sc">~</span> ego_uses_English,</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>homophily <span class="ot">&lt;-</span> alter_profiled <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(participant_id, ego_l1, ego_l2) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop_l1_homophily =</span> <span class="fu">mean_or_na</span>(l1_match),</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop_l2_homophily =</span> <span class="fu">mean_or_na</span>(l2_match),</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>Ten of 15 alters are used with Mandarin, so <code>prop_l1_homophily = 0.67</code>. Twelve of 15 are used with English, so <code>prop_l2_homophily = 0.80</code>.</p>
+<h2 id="wide-ego-level-output">5.4 Wide ego-level output</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ego_compositional <span class="ot">&lt;-</span> cs_measures <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(mandarin_measures, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(homophily, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(ego_compositional, <span class="st">&quot;data/jefwan37_ego_compositional_wide.csv&quot;</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>ego_compositional</span></code></pre></div>
+<figure>
+<img src="figures/fig07_real_composition_jefwan37.png" alt="Tidy dyad records aggregated to one wide row of ego-level compositional measures." /><figcaption aria-hidden="true">Tidy dyad records aggregated to one wide row of ego-level compositional measures.</figcaption>
+</figure>
+<h1 id="expected-results-and-validation">6. Expected results and validation</h1>
 <table>
 <thead>
 <tr class="header">
@@ -581,14 +660,8 @@ validation</h1>
 </tr>
 </tbody>
 </table>
-<p>The standalone script includes assertions for the network size,
-language composition, global CS mean, and both homophily values. The
-workbook provides the same source-to-output trail for readers who prefer
-to inspect the calculations without running R.</p>
-<h1 id="7-next-step">7. Next step</h1>
-<p>Continue with the <a
-href="../BiNet_Network_Visualization/BiNet_network_visualization.md">network
-visualization tutorial</a>, which uses these same 15 alters and 21
-alter–alter ties to reproduce manuscript Figure 8A/B.</p>
+<p>The standalone script includes assertions for the network size, language composition, global CS mean, and both homophily values. The workbook provides the same source-to-output trail for readers who prefer to inspect the calculations without running R.</p>
+<h1 id="next-step">7. Next step</h1>
+<p>Continue with the <a href="../BiNet_Network_Visualization/BiNet_network_visualization.md">network visualization tutorial</a>, which uses these same 15 alters and 21 alter–alter ties to reproduce manuscript Figure 8A/B.</p>
 </body>
 </html>
