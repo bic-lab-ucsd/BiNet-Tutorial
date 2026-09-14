@@ -30,19 +30,26 @@ Both panels contain the same 15 alters, the same ego–alter ties, and the same 
 
 # 1. Load the included data
 
-The visualization uses the tidy alter table and edge list created in the preprocessing tutorial.
+The visualization loads the two node- and edge-level CSV files written by the preprocessing tutorial: `jefwan37_tidy_alter.csv` and `jefwan37_alter_edges.csv`. It does not load `jefwan37_ego_compositional_wide.csv`, which contains one row of ego-level summary measures and therefore cannot supply the nodes and ties required for a network plot.
 
 ```r
-data_dir <- file.path(
+preprocessing_data_dir <- file.path(
   "BiNet_preprocessing_compositional_Measures", "data"
 )
+tidy_alter_path <- file.path(
+  preprocessing_data_dir, "jefwan37_tidy_alter.csv"
+)
+alter_edges_path <- file.path(
+  preprocessing_data_dir, "jefwan37_alter_edges.csv"
+)
+
 alters <- read.csv(
-  file.path(data_dir, "jefwan37_tidy_alter.csv"),
+  tidy_alter_path,
   stringsAsFactors = FALSE,
   check.names = FALSE
 )
 edges <- read.csv(
-  file.path(data_dir, "jefwan37_alter_edges.csv"),
+  alter_edges_path,
   stringsAsFactors = FALSE,
   check.names = FALSE
 )

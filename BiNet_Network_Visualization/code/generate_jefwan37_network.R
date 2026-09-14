@@ -9,16 +9,25 @@ script_path <- if (length(script_arg)) sub("^--file=", "", script_arg[[1]]) else
   "BiNet_Network_Visualization/code/generate_jefwan37_network.R"
 script_dir <- normalizePath(dirname(script_path), mustWork = TRUE)
 repo_dir <- normalizePath(file.path(script_dir, "..", ".."), mustWork = TRUE)
-data_dir <- file.path(repo_dir, "BiNet_preprocessing_compositional_Measures", "data")
+preprocessing_data_dir <- file.path(
+  repo_dir, "BiNet_preprocessing_compositional_Measures", "data"
+)
 output_dir <- file.path(repo_dir, "BiNet_Network_Visualization", "figures")
 
+tidy_alter_path <- file.path(
+  preprocessing_data_dir, "jefwan37_tidy_alter.csv"
+)
+alter_edges_path <- file.path(
+  preprocessing_data_dir, "jefwan37_alter_edges.csv"
+)
+
 alters <- read.csv(
-  file.path(data_dir, "jefwan37_tidy_alter.csv"),
+  tidy_alter_path,
   stringsAsFactors = FALSE,
   check.names = FALSE
 )
 edges <- read.csv(
-  file.path(data_dir, "jefwan37_alter_edges.csv"),
+  alter_edges_path,
   stringsAsFactors = FALSE,
   check.names = FALSE
 )

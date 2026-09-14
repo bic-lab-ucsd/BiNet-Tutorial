@@ -8,9 +8,10 @@ The respondent nominated 15 alters and 21 alter–alter ties. In reported intera
 ## Files
 
 - `data/jefwan37_raw_flags.csv`: deidentified binary indicators and dyad ratings.
+- `data/jefwan37_raw_edges.csv`: deidentified alter–alter pairs before the visualization export is written.
 - `data/jefwan37_lhq.csv`: deidentified LHQ language profile used in the merge example.
 - `data/jefwan37_tidy_alter.csv`: one row per ego–alter dyad after recoding.
-- `data/jefwan37_alter_edges.csv`: deidentified alter–alter ties.
+- `data/jefwan37_alter_edges.csv`: two-column alter–alter edge list written for visualization.
 - `data/jefwan37_ego_compositional_wide.csv`: one-row ego-level output.
 - `code/reproduce_jefwan37_measures.R`: standalone reproduction and validation script.
 - `excel/BiNet_jefwan37_real_data_walkthrough.xlsx`: inspectable workbook with source, tidy, output, and quality-check sheets.
@@ -99,15 +100,15 @@ check_columns(
 
 ## 1.2 Import the LHQ and link a full export
 
-Read the LHQ separately, standardize its participant identifier, and join its ego-level variables to the Network Canvas ego file. `semi_join()` then restricts alter and tie records to egos retained in the linked ego table. Replace `participant_id` in the `rename()` call if the LHQ uses another ID column.
+Read the LHQ separately and join its ego-level variables to the Network Canvas ego file. Following Monica's preprocessing pipeline, both files already contain `ego_id`, so no rename is needed. If a study's LHQ uses another ID column, rename that actual column to `ego_id` before this block. `semi_join()` then restricts alter and tie records to egos retained in the linked ego table.
 
 ```r
 
 lhq_df <- readr::read_csv("data/lhq.csv", show_col_types = FALSE) |>
-  dplyr::rename(ego_id = participant_id) |>
   dplyr::mutate(ego_id = as.character(ego_id))
 
 egoData_linked <- data_ego |>
+  dplyr::select(networkCanvasEgoUUID, ego_id, sessionStart, sessionFinish) |>
   dplyr::mutate(ego_id = as.character(ego_id)) |>
   dplyr::left_join(lhq_df, by = "ego_id")
 
@@ -153,8 +154,7 @@ library(readr)
 
 lhq_df <- read_csv("data/jefwan37_lhq.csv", show_col_types = FALSE)
 data_alter <- read_csv("data/jefwan37_raw_flags.csv", show_col_types = FALSE)
-data_edgelist <- read_csv("data/jefwan37_alter_edges.csv", show_col_types = FALSE) |>
-  mutate(participant_id = "jefwan37", .before = source)
+data_edgelist <- read_csv("data/jefwan37_raw_edges.csv", show_col_types = FALSE)
 data_ego <- data_alter |>
   distinct(participant_id)
 
@@ -253,7 +253,15 @@ tidy_alter <- alter |>
     alter_knows_Mandarin, alter_knows_English,
     ego_uses_Mandarin, ego_uses_English
   )
+
+alter_edges <- edgelist_linked |>
+  select(source, target)
+
+write_csv(tidy_alter, "data/jefwan37_tidy_alter.csv")
+write_csv(alter_edges, "data/jefwan37_alter_edges.csv")
 ```
+
+These two files are the visualization inputs. `jefwan37_tidy_alter.csv` supplies node attributes such as language, context, and emotional closeness; `jefwan37_alter_edges.csv` supplies the 21 alter–alter ties. The visualization does not load `jefwan37_ego_compositional_wide.csv`, because that one-row file contains summary measures rather than node or edge records.
 
 # 5. Construct ego-level compositional measures
 

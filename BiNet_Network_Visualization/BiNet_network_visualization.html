@@ -310,28 +310,39 @@ Mandarin–English</td>
 </tbody>
 </table>
 <h1 id="load-the-included-data">1. Load the included data</h1>
-<p>The visualization uses the tidy alter table and edge list created in
-the preprocessing tutorial.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
+<p>The visualization loads the two node- and edge-level CSV files written
+by the preprocessing tutorial: <code>jefwan37_tidy_alter.csv</code> and
+<code>jefwan37_alter_edges.csv</code>. It does not load
+<code>jefwan37_ego_compositional_wide.csv</code>, which contains one row
+of ego-level summary measures and therefore cannot supply the nodes and
+ties required for a network plot.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>preprocessing_data_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;BiNet_preprocessing_compositional_Measures&quot;</span>, <span class="st">&quot;data&quot;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>alters <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(data_dir, <span class="st">&quot;jefwan37_tidy_alter.csv&quot;</span>),</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(data_dir, <span class="st">&quot;jefwan37_alter_edges.csv&quot;</span>),</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(alters) <span class="sc">==</span> <span class="dv">15</span><span class="dt">L</span>,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(edges) <span class="sc">==</span> <span class="dv">21</span><span class="dt">L</span>,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(<span class="fu">c</span>(<span class="st">&quot;source&quot;</span>, <span class="st">&quot;target&quot;</span>) <span class="sc">%in%</span> <span class="fu">names</span>(edges)),</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(<span class="fu">c</span>(edges<span class="sc">$</span>source, edges<span class="sc">$</span>target) <span class="sc">%in%</span> alters<span class="sc">$</span>alter_label)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>tidy_alter_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  preprocessing_data_dir, <span class="st">&quot;jefwan37_tidy_alter.csv&quot;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>alter_edges_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  preprocessing_data_dir, <span class="st">&quot;jefwan37_alter_edges.csv&quot;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>alters <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  tidy_alter_path,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  alter_edges_path,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(alters) <span class="sc">==</span> <span class="dv">15</span><span class="dt">L</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(edges) <span class="sc">==</span> <span class="dv">21</span><span class="dt">L</span>,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(<span class="fu">c</span>(<span class="st">&quot;source&quot;</span>, <span class="st">&quot;target&quot;</span>) <span class="sc">%in%</span> <span class="fu">names</span>(edges)),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(<span class="fu">c</span>(edges<span class="sc">$</span>source, edges<span class="sc">$</span>target) <span class="sc">%in%</span> alters<span class="sc">$</span>alter_label)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <p>The deidentified labels <code>A01</code>–<code>A15</code> connect the
 node table and the edge table. They replace names and other direct
 identifiers.</p>

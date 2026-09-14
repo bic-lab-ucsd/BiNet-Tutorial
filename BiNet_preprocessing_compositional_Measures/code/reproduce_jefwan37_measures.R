@@ -15,10 +15,11 @@ script_path <- if (length(script_arg)) sub("^--file=", "", script_arg[[1]]) else
 project_dir <- normalizePath(file.path(dirname(script_path), ".."), mustWork = TRUE)
 
 raw_path <- file.path(project_dir, "data", "jefwan37_raw_flags.csv")
-edge_path <- file.path(project_dir, "data", "jefwan37_alter_edges.csv")
+raw_edge_path <- file.path(project_dir, "data", "jefwan37_raw_edges.csv")
 lhq_path <- file.path(project_dir, "data", "jefwan37_lhq.csv")
-tidy_reference_path <- file.path(project_dir, "data", "jefwan37_tidy_alter.csv")
-output_path <- file.path(project_dir, "data", "jefwan37_ego_compositional_wide.csv")
+tidy_output_path <- file.path(project_dir, "data", "jefwan37_tidy_alter.csv")
+edge_output_path <- file.path(project_dir, "data", "jefwan37_alter_edges.csv")
+ego_output_path <- file.path(project_dir, "data", "jefwan37_ego_compositional_wide.csv")
 
 mean_or_na <- function(x) {
   observed <- x[!is.na(x)]
@@ -28,8 +29,7 @@ mean_or_na <- function(x) {
 # Import the separate source levels and link the public, deidentified example
 # with the same participant-ID logic used for full Network Canvas + LHQ data.
 data_alter <- read_csv(raw_path, show_col_types = FALSE)
-data_edgelist <- read_csv(edge_path, show_col_types = FALSE) |>
-  mutate(participant_id = "jefwan37", .before = source)
+data_edgelist <- read_csv(raw_edge_path, show_col_types = FALSE)
 lhq_df <- read_csv(lhq_path, show_col_types = FALSE)
 data_ego <- data_alter |>
   distinct(participant_id)
@@ -84,7 +84,7 @@ alter <- alterData_linked |>
     )
   )
 
-# Confirm that the reconstructed tidy table matches the published artifact.
+# Construct the two node- and edge-level files used by the visualization.
 tidy_alter <- alter |>
   select(
     participant_id, alter_label, nodeID,
@@ -93,14 +93,13 @@ tidy_alter <- alter |>
     alter_knows_Mandarin, alter_knows_English,
     ego_uses_Mandarin, ego_uses_English
   )
-tidy_reference <- read_csv(tidy_reference_path, show_col_types = FALSE)
+alter_edges <- edgelist_linked |>
+  select(source, target)
 
 stopifnot(
-  isTRUE(all.equal(
-    as.data.frame(tidy_alter),
-    as.data.frame(tidy_reference),
-    check.attributes = FALSE
-  ))
+  nrow(tidy_alter) == 15L,
+  nrow(alter_edges) == 21L,
+  all(c(alter_edges$source, alter_edges$target) %in% tidy_alter$alter_label)
 )
 
 # Use the imported LHQ profile for ego-specific homophily. A bilingual alter
@@ -164,5 +163,8 @@ stopifnot(
   isTRUE(all.equal(ego$prop_l2_homophily, 12 / 15, tolerance = 1e-9))
 )
 
-write_csv(ego, output_path)
+write_csv(tidy_alter, tidy_output_path)
+write_csv(alter_edges, edge_output_path)
+write_csv(ego, ego_output_path)
+message("Wrote visualization inputs: ", tidy_output_path, " and ", edge_output_path)
 print(ego, width = Inf)

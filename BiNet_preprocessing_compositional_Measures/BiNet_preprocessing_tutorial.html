@@ -264,9 +264,10 @@
 <h2 id="files">Files</h2>
 <ul>
 <li><code>data/jefwan37_raw_flags.csv</code>: deidentified binary indicators and dyad ratings.</li>
+<li><code>data/jefwan37_raw_edges.csv</code>: deidentified alter–alter pairs before the visualization export is written.</li>
 <li><code>data/jefwan37_lhq.csv</code>: deidentified LHQ language profile used in the merge example.</li>
 <li><code>data/jefwan37_tidy_alter.csv</code>: one row per ego–alter dyad after recoding.</li>
-<li><code>data/jefwan37_alter_edges.csv</code>: deidentified alter–alter ties.</li>
+<li><code>data/jefwan37_alter_edges.csv</code>: two-column alter–alter edge list written for visualization.</li>
 <li><code>data/jefwan37_ego_compositional_wide.csv</code>: one-row ego-level output.</li>
 <li><code>code/reproduce_jefwan37_measures.R</code>: standalone reproduction and validation script.</li>
 <li><code>excel/BiNet_jefwan37_real_data_walkthrough.xlsx</code>: inspectable workbook with source, tidy, output, and quality-check sheets.</li>
@@ -367,13 +368,13 @@
 <span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Tie export&quot;</span></span>
 <span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <h2 id="import-the-lhq-and-link-a-full-export">1.2 Import the LHQ and link a full export</h2>
-<p>Read the LHQ separately, standardize its participant identifier, and join its ego-level variables to the Network Canvas ego file. <code>semi_join()</code> then restricts alter and tie records to egos retained in the linked ego table. Replace <code>participant_id</code> in the <code>rename()</code> call if the LHQ uses another ID column.</p>
+<p>Read the LHQ separately and join its ego-level variables to the Network Canvas ego file. Following Monica’s preprocessing pipeline, both files already contain <code>ego_id</code>, so no rename is needed. If a study’s LHQ uses another ID column, rename that actual column to <code>ego_id</code> before this block. <code>semi_join()</code> then restricts alter and tie records to egos retained in the linked ego table.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>lhq_df <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&quot;data/lhq.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">ego_id =</span> participant_id) <span class="sc">|</span><span class="er">&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id))</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>egoData_linked <span class="ot">&lt;-</span> data_ego <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>egoData_linked <span class="ot">&lt;-</span> data_ego <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(networkCanvasEgoUUID, ego_id, sessionStart, sessionFinish) <span class="sc">|</span><span class="er">&gt;</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id)) <span class="sc">|</span><span class="er">&gt;</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(lhq_df, <span class="at">by =</span> <span class="st">&quot;ego_id&quot;</span>)</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
@@ -410,29 +411,28 @@
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>lhq_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/jefwan37_lhq.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>data_alter <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/jefwan37_raw_flags.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>data_edgelist <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/jefwan37_alter_edges.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">participant_id =</span> <span class="st">&quot;jefwan37&quot;</span>, <span class="at">.before =</span> source)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>data_ego <span class="ot">&lt;-</span> data_alter <span class="sc">|</span><span class="er">&gt;</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(participant_id)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>egoData_linked <span class="ot">&lt;-</span> data_ego <span class="sc">|</span><span class="er">&gt;</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(lhq_df, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>)</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>alterData_linked <span class="ot">&lt;-</span> data_alter <span class="sc">|</span><span class="er">&gt;</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(egoData_linked, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>edgelist_linked <span class="ot">&lt;-</span> data_edgelist <span class="sc">|</span><span class="er">&gt;</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(egoData_linked, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>)</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(egoData_linked) <span class="sc">==</span> <span class="dv">1</span>,</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(alterData_linked) <span class="sc">==</span> <span class="dv">15</span>,</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(edgelist_linked) <span class="sc">==</span> <span class="dv">21</span>,</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">anyDuplicated</span>(alterData_linked<span class="sc">$</span>alter_label),</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(<span class="fu">c</span>(edgelist_linked<span class="sc">$</span>source, edgelist_linked<span class="sc">$</span>target) <span class="sc">%in%</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>        alterData_linked<span class="sc">$</span>alter_label),</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">anyNA</span>(egoData_linked[<span class="fu">c</span>(<span class="st">&quot;ego_l1&quot;</span>, <span class="st">&quot;ego_l2&quot;</span>)])</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>data_edgelist <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/jefwan37_raw_edges.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>data_ego <span class="ot">&lt;-</span> data_alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(participant_id)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>egoData_linked <span class="ot">&lt;-</span> data_ego <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(lhq_df, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>alterData_linked <span class="ot">&lt;-</span> data_alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(egoData_linked, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>edgelist_linked <span class="ot">&lt;-</span> data_edgelist <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(egoData_linked, <span class="at">by =</span> <span class="st">&quot;participant_id&quot;</span>)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(egoData_linked) <span class="sc">==</span> <span class="dv">1</span>,</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(alterData_linked) <span class="sc">==</span> <span class="dv">15</span>,</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(edgelist_linked) <span class="sc">==</span> <span class="dv">21</span>,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">anyDuplicated</span>(alterData_linked<span class="sc">$</span>alter_label),</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(<span class="fu">c</span>(edgelist_linked<span class="sc">$</span>source, edgelist_linked<span class="sc">$</span>target) <span class="sc">%in%</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>        alterData_linked<span class="sc">$</span>alter_label),</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">anyNA</span>(egoData_linked[<span class="fu">c</span>(<span class="st">&quot;ego_l1&quot;</span>, <span class="st">&quot;ego_l2&quot;</span>)])</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <p>The checks confirm a one-row LHQ merge, 15 linked alters, 21 linked ties, unique alter labels, and valid edge endpoints. They establish the denominator before aggregation and catch ID problems before measures are calculated.</p>
 <figure>
 <img src="figures/fig04_real_input_overview_all_data.png" alt="Three linked input levels: ego, alter/ego–alter, and alter–alter tie records." /><figcaption aria-hidden="true">Three linked input levels: ego, alter/ego–alter, and alter–alter tie records.</figcaption>
@@ -518,7 +518,14 @@
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    emotional_closeness, interaction_frequency, codeswitching_frequency,</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    alter_knows_Mandarin, alter_knows_English,</span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    ego_uses_Mandarin, ego_uses_English</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>alter_edges <span class="ot">&lt;-</span> edgelist_linked <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(source, target)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(tidy_alter, <span class="st">&quot;data/jefwan37_tidy_alter.csv&quot;</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(alter_edges, <span class="st">&quot;data/jefwan37_alter_edges.csv&quot;</span>)</span></code></pre></div>
+<p>These two files are the visualization inputs. <code>jefwan37_tidy_alter.csv</code> supplies node attributes such as language, context, and emotional closeness; <code>jefwan37_alter_edges.csv</code> supplies the 21 alter–alter ties. The visualization does not load <code>jefwan37_ego_compositional_wide.csv</code>, because that one-row file contains summary measures rather than node or edge records.</p>
 <h1 id="construct-ego-level-compositional-measures">5. Construct ego-level compositional measures</h1>
 <h2 id="code-switching-means">5.1 Code-switching means</h2>
 <p>The questionnaire asks for code-switching frequency only when more than one interaction language is selected. For the manuscript analysis, a Mandarin-only or English-only dyad contributes a genuine <code>0</code>; a Mandarin–English dyad retains its reported 1–4 rating. This rule keeps all 15 nominated alters in the network-wide denominator.</p>
