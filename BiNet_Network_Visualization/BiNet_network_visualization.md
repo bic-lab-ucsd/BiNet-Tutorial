@@ -170,8 +170,9 @@ lines represent alter–alter ties.</figcaption>
 To reuse the script, provide one tidy alter file and one edge file with
 the same minimum fields:
 
-- alter table: `participant_id`, `alter_label`, `languageUsedCategory`,
-  `interaction_context`, and `emotional_closeness`;
+- alter table: `alter_label`, `languageUsedCategory`,
+  `interaction_context`, and `emotional_closeness` (filter to one `ego_id`
+  first if the table contains multiple egos);
 - edge table: `source` and `target`, using the alter labels from the
   node table.
 

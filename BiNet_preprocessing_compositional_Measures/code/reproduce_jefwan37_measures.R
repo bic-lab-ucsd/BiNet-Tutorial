@@ -28,18 +28,21 @@ mean_or_na <- function(x) {
 
 # Import the separate source levels and link the public, deidentified example
 # with the same participant-ID logic used for full Network Canvas + LHQ data.
-data_alter <- read_csv(raw_path, show_col_types = FALSE)
-data_edgelist <- read_csv(raw_edge_path, show_col_types = FALSE)
-lhq_df <- read_csv(lhq_path, show_col_types = FALSE)
+data_alter <- read_csv(raw_path, show_col_types = FALSE) |>
+  rename(ego_id = participant_id)
+data_edgelist <- read_csv(raw_edge_path, show_col_types = FALSE) |>
+  rename(ego_id = participant_id)
+lhq_df <- read_csv(lhq_path, show_col_types = FALSE) |>
+  rename(ego_id = participant_id)
 data_ego <- data_alter |>
-  distinct(participant_id)
+  distinct(ego_id)
 
 egoData_linked <- data_ego |>
-  left_join(lhq_df, by = "participant_id")
+  left_join(lhq_df, by = "ego_id")
 alterData_linked <- data_alter |>
-  semi_join(egoData_linked, by = "participant_id")
+  semi_join(egoData_linked, by = "ego_id")
 edgelist_linked <- data_edgelist |>
-  semi_join(egoData_linked, by = "participant_id")
+  semi_join(egoData_linked, by = "ego_id")
 
 stopifnot(
   nrow(egoData_linked) == 1L,
@@ -87,7 +90,7 @@ alter <- alterData_linked |>
 # Construct the two node- and edge-level files used by the visualization.
 tidy_alter <- alter |>
   select(
-    participant_id, alter_label, nodeID,
+    ego_id, alter_label, nodeID,
     languageKnownCategory, languageUsedCategory, interaction_context,
     emotional_closeness, interaction_frequency, codeswitching_frequency,
     alter_knows_Mandarin, alter_knows_English,
@@ -105,10 +108,10 @@ stopifnot(
 # Use the imported LHQ profile for ego-specific homophily. A bilingual alter
 # contributes to both L1 and L2 homophily measures.
 ego_profile <- egoData_linked |>
-  select(participant_id, ego_l1, ego_l2)
+  select(ego_id, ego_l1, ego_l2)
 
 alter <- alter |>
-  left_join(ego_profile, by = "participant_id") |>
+  left_join(ego_profile, by = "ego_id") |>
   mutate(
     l1_match = case_when(
       ego_l1 == "Mandarin" ~ ego_uses_Mandarin,
@@ -131,7 +134,7 @@ prop_in_context <- function(flags, contexts, target) {
 }
 
 ego <- alter |>
-  group_by(participant_id, ego_l1, ego_l2) |>
+  group_by(ego_id, ego_l1, ego_l2) |>
   summarise(
     cs_global = mean_or_na(cs_zero_coded),
     cs_family = measure_in_context(cs_zero_coded, interaction_context, "family"),
@@ -147,7 +150,7 @@ ego <- alter |>
     .groups = "drop"
   ) |>
   select(
-    participant_id, cs_global, cs_family, cs_community, cs_social, cs_school,
+    ego_id, cs_global, cs_family, cs_community, cs_social, cs_school,
     mandarin_global_prop, mandarin_family_prop, mandarin_community_prop,
     mandarin_social_prop, ego_l1, ego_l2, prop_l1_homophily,
     prop_l2_homophily
@@ -163,8 +166,13 @@ stopifnot(
   isTRUE(all.equal(ego$prop_l2_homophily, 12 / 15, tolerance = 1e-9))
 )
 
-write_csv(tidy_alter, tidy_output_path)
+tidy_alter_for_export <- tidy_alter |>
+  rename(participant_id = ego_id)
+ego_for_export <- ego |>
+  rename(participant_id = ego_id)
+
+write_csv(tidy_alter_for_export, tidy_output_path)
 write_csv(alter_edges, edge_output_path)
-write_csv(ego, ego_output_path)
+write_csv(ego_for_export, ego_output_path)
 message("Wrote visualization inputs: ", tidy_output_path, " and ", edge_output_path)
-print(ego, width = Inf)
+print(ego_for_export, width = Inf)

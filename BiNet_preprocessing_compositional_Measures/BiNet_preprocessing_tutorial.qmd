@@ -44,7 +44,7 @@ BiNet data have linked ego, alter, and alter–alter tie levels. LHQ variables a
 | `*_edgeList_tie.csv` | One row per alter–alter tie | `networkCanvasEgoUUID`, source and target alter identifiers |
 | LHQ file | One row per participant | Study participant ID matching `ego_id` |
 
-In a full Network Canvas export, `networkCanvasEgoUUID` links all files belonging to one ego, and alter UUIDs identify the endpoints of each alter–alter tie. The LHQ participant ID must be standardized to the same type and name as `ego_id` before joining. In the published `jefwan37` walkthrough, direct system identifiers are replaced by `participant_id` and deidentified alter labels `A01`–`A15`.
+In a full Network Canvas export, `networkCanvasEgoUUID` links all files belonging to one ego, and alter UUIDs identify the endpoints of each alter–alter tie. The LHQ participant ID must be standardized to the same type and name as `ego_id` before joining. The tutorial uses `ego_id` as its internal key from the merge through every compositional calculation.
 
 ## 1.1 Batch-import raw Network Canvas exports
 
@@ -157,26 +157,29 @@ if (nrow(unmatched_lhq)) {
 
 ## 1.3 Run the same import and merge for `jefwan37`
 
-The public walkthrough uses flattened, deidentified files instead of publishing raw Network Canvas UUIDs. The linking logic is unchanged: `participant_id` connects the LHQ and alter tables, while `alter_label` connects the alter and edge tables.
+The public walkthrough uses flattened, deidentified files instead of publishing raw Network Canvas UUIDs. Its included CSVs use `participant_id`, so the three import lines below rename that known column to `ego_id` once. All later joins, groups, and summaries use `ego_id`, matching the full Network Canvas/LHQ pipeline. `alter_label` connects the alter and edge tables.
 
 ```{r}
 library(dplyr)
 library(readr)
 
-lhq_df <- read_csv("data/jefwan37_lhq.csv", show_col_types = FALSE)
-data_alter <- read_csv("data/jefwan37_raw_flags.csv", show_col_types = FALSE)
-data_edgelist <- read_csv("data/jefwan37_raw_edges.csv", show_col_types = FALSE)
+lhq_df <- read_csv("data/jefwan37_lhq.csv", show_col_types = FALSE) |>
+  rename(ego_id = participant_id)
+data_alter <- read_csv("data/jefwan37_raw_flags.csv", show_col_types = FALSE) |>
+  rename(ego_id = participant_id)
+data_edgelist <- read_csv("data/jefwan37_raw_edges.csv", show_col_types = FALSE) |>
+  rename(ego_id = participant_id)
 data_ego <- data_alter |>
-  distinct(participant_id)
+  distinct(ego_id)
 
 egoData_linked <- data_ego |>
-  left_join(lhq_df, by = "participant_id")
+  left_join(lhq_df, by = "ego_id")
 
 alterData_linked <- data_alter |>
-  semi_join(egoData_linked, by = "participant_id")
+  semi_join(egoData_linked, by = "ego_id")
 
 edgelist_linked <- data_edgelist |>
-  semi_join(egoData_linked, by = "participant_id")
+  semi_join(egoData_linked, by = "ego_id")
 
 stopifnot(
   nrow(egoData_linked) == 1,
@@ -258,7 +261,7 @@ The analysis table keeps one row per ego–alter dyad. It contains stable identi
 ```{r}
 tidy_alter <- alter |>
   select(
-    participant_id, alter_label, nodeID,
+    ego_id, alter_label, nodeID,
     languageKnownCategory, languageUsedCategory, interaction_context,
     emotional_closeness, interaction_frequency, codeswitching_frequency,
     alter_knows_Mandarin, alter_knows_English,
@@ -268,7 +271,10 @@ tidy_alter <- alter |>
 alter_edges <- edgelist_linked |>
   select(source, target)
 
-write_csv(tidy_alter, "data/jefwan37_tidy_alter.csv")
+tidy_alter_for_export <- tidy_alter |>
+  rename(participant_id = ego_id)
+
+write_csv(tidy_alter_for_export, "data/jefwan37_tidy_alter.csv")
 write_csv(alter_edges, "data/jefwan37_alter_edges.csv")
 ```
 
@@ -304,7 +310,7 @@ context_mean <- function(values, contexts, target) {
 }
 
 cs_measures <- alter |>
-  group_by(participant_id) |>
+  group_by(ego_id) |>
   summarise(
     cs_global = mean_or_na(cs_zero_coded),
     cs_family = context_mean(cs_zero_coded, interaction_context, "family"),
@@ -327,7 +333,7 @@ context_prop <- function(flags, contexts, target) {
 }
 
 mandarin_measures <- alter |>
-  group_by(participant_id) |>
+  group_by(ego_id) |>
   summarise(
     mandarin_global_prop = mean_or_na(languageUsedCategory == "Mandarin"),
     mandarin_family_prop = context_prop(languageUsedCategory == "Mandarin", interaction_context, "family"),
@@ -345,10 +351,10 @@ Language homophily must be mapped to each ego's language profile rather than tie
 
 ```{r}
 ego_profile <- egoData_linked |>
-  select(participant_id, ego_l1, ego_l2)
+  select(ego_id, ego_l1, ego_l2)
 
 alter_profiled <- alter |>
-  left_join(ego_profile, by = "participant_id") |>
+  left_join(ego_profile, by = "ego_id") |>
   mutate(
     l1_match = case_when(
       ego_l1 == "Mandarin" ~ ego_uses_Mandarin,
@@ -363,7 +369,7 @@ alter_profiled <- alter |>
   )
 
 homophily <- alter_profiled |>
-  group_by(participant_id, ego_l1, ego_l2) |>
+  group_by(ego_id, ego_l1, ego_l2) |>
   summarise(
     prop_l1_homophily = mean_or_na(l1_match),
     prop_l2_homophily = mean_or_na(l2_match),
@@ -377,10 +383,13 @@ Ten of 15 alters are used with Mandarin, so `prop_l1_homophily = 0.67`. Twelve o
 
 ```{r}
 ego_compositional <- cs_measures |>
-  left_join(mandarin_measures, by = "participant_id") |>
-  left_join(homophily, by = "participant_id")
+  left_join(mandarin_measures, by = "ego_id") |>
+  left_join(homophily, by = "ego_id")
 
-write_csv(ego_compositional, "data/jefwan37_ego_compositional_wide.csv")
+ego_compositional_for_export <- ego_compositional |>
+  rename(participant_id = ego_id)
+
+write_csv(ego_compositional_for_export, "data/jefwan37_ego_compositional_wide.csv")
 ego_compositional
 ```
 

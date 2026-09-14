@@ -149,7 +149,7 @@ The script uses base R, validates the node and edge counts, and writes `figures/
 
 To reuse the script, provide one tidy alter file and one edge file with the same minimum fields:
 
-- alter table: `participant_id`, `alter_label`, `languageUsedCategory`, `interaction_context`, and `emotional_closeness`;
+- alter table: `alter_label`, `languageUsedCategory`, `interaction_context`, and `emotional_closeness` (filter to one `ego_id` first if the table contains multiple egos);
 - edge table: `source` and `target`, using the alter labels from the node table.
 
 Before plotting, verify that every edge endpoint occurs in the alter table, every alter has exactly one analysis context, and each language category has a defined color. Context placement and node-size scaling can then be adjusted without changing the underlying measures.

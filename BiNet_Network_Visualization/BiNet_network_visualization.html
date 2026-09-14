@@ -447,9 +447,10 @@ another participant</h1>
 <p>To reuse the script, provide one tidy alter file and one edge file
 with the same minimum fields:</p>
 <ul>
-<li>alter table: <code>participant_id</code>, <code>alter_label</code>,
+<li>alter table: <code>alter_label</code>,
 <code>languageUsedCategory</code>, <code>interaction_context</code>, and
-<code>emotional_closeness</code>;</li>
+<code>emotional_closeness</code> (filter to one <code>ego_id</code> first
+if the table contains multiple egos);</li>
 <li>edge table: <code>source</code> and <code>target</code>, using the
 alter labels from the node table.</li>
 </ul>
