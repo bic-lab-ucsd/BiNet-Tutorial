@@ -61,7 +61,7 @@ stopifnot(
 
 # Recode the binary Network Canvas indicators into the analysis variables.
 alter <- alterData_linked |>
-  mutate(
+  dplyr::mutate(
     ego_id = as.character(ego_id),
     languageKnownCategory = case_when(
       alter_knows_Mandarin & alter_knows_English ~ "Mandarin-English",
@@ -114,12 +114,12 @@ stopifnot(
 # Use the imported LHQ profile for ego-specific homophily. A bilingual alter
 # contributes to both L1 and L2 homophily measures.
 ego_profile <- egoData_linked |>
-  transmute(ego_id = as.character(ego_id), ego_l1, ego_l2)
+  dplyr::transmute(ego_id = as.character(ego_id), ego_l1, ego_l2)
 
 alter <- alter |>
-  mutate(ego_id = as.character(ego_id)) |>
-  left_join(ego_profile, by = "ego_id") |>
-  mutate(
+  dplyr::mutate(ego_id = as.character(ego_id)) |>
+  dplyr::left_join(ego_profile, by = "ego_id") |>
+  dplyr::mutate(
     l1_match = case_when(
       ego_l1 == "Mandarin" ~ ego_uses_Mandarin,
       ego_l1 == "English" ~ ego_uses_English,
@@ -141,8 +141,8 @@ prop_in_context <- function(flags, contexts, target) {
 }
 
 ego <- alter |>
-  group_by(ego_id, ego_l1, ego_l2) |>
-  summarise(
+  dplyr::group_by(ego_id, ego_l1, ego_l2) |>
+  dplyr::summarise(
     cs_global = mean_or_na(cs_zero_coded),
     cs_family = measure_in_context(cs_zero_coded, interaction_context, "family"),
     cs_community = measure_in_context(cs_zero_coded, interaction_context, "community"),

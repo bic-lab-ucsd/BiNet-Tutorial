@@ -241,7 +241,7 @@ Network Canvas exports one Boolean column for each language. Two paired indicato
 
 ```{r}
 alter <- alterData_linked |>
-  mutate(
+  dplyr::mutate(
     ego_id = as.character(ego_id),
     languageKnownCategory = case_when(
       alter_knows_Mandarin & alter_knows_English ~ "Mandarin-English",
@@ -268,7 +268,7 @@ The protocol stores contexts in separate indicator columns. Household and extend
 
 ```{r}
 alter <- alter |>
-  mutate(
+  dplyr::mutate(
     interaction_context = case_when(
       household | extended_family ~ "family",
       community ~ "community",
@@ -315,13 +315,15 @@ These two files are the visualization inputs. `jefwan37_tidy_alter.csv` supplies
 
 # 5. Construct ego-level compositional measures
 
+The code below uses explicit `dplyr::` prefixes for grouped calculations and joins. This prevents `plyr::summarise()` or another package from masking the dplyr function, which can silently drop the grouped `ego_id` column and cause the join in Section 5.4 to fail.
+
 ## 5.1 Code-switching means
 
 The questionnaire asks for code-switching frequency only when more than one interaction language is selected. For the manuscript analysis, a Mandarin-only or English-only dyad contributes a genuine `0`; a Mandarin–English dyad retains its reported 1–4 rating. This rule keeps all 15 nominated alters in the network-wide denominator.
 
 ```{r}
 alter <- alter |>
-  mutate(
+  dplyr::mutate(
     cs_zero_coded = case_when(
       languageUsedCategory %in% c("Mandarin", "English") ~ 0,
       languageUsedCategory == "Mandarin-English" ~ codeswitching_frequency,
@@ -343,8 +345,8 @@ context_mean <- function(values, contexts, target) {
 }
 
 cs_measures <- alter |>
-  group_by(ego_id) |>
-  summarise(
+  dplyr::group_by(ego_id) |>
+  dplyr::summarise(
     cs_global = mean_or_na(cs_zero_coded),
     cs_family = context_mean(cs_zero_coded, interaction_context, "family"),
     cs_community = context_mean(cs_zero_coded, interaction_context, "community"),
@@ -366,8 +368,8 @@ context_prop <- function(flags, contexts, target) {
 }
 
 mandarin_measures <- alter |>
-  group_by(ego_id) |>
-  summarise(
+  dplyr::group_by(ego_id) |>
+  dplyr::summarise(
     mandarin_global_prop = mean_or_na(languageUsedCategory == "Mandarin"),
     mandarin_family_prop = context_prop(languageUsedCategory == "Mandarin", interaction_context, "family"),
     mandarin_community_prop = context_prop(languageUsedCategory == "Mandarin", interaction_context, "community"),
@@ -384,12 +386,12 @@ Language homophily must be mapped to each ego's language profile rather than tie
 
 ```{r}
 ego_profile <- egoData_linked |>
-  transmute(ego_id = as.character(ego_id), ego_l1, ego_l2)
+  dplyr::transmute(ego_id = as.character(ego_id), ego_l1, ego_l2)
 
 alter_profiled <- alter |>
-  mutate(ego_id = as.character(ego_id)) |>
-  left_join(ego_profile, by = "ego_id") |>
-  mutate(
+  dplyr::mutate(ego_id = as.character(ego_id)) |>
+  dplyr::left_join(ego_profile, by = "ego_id") |>
+  dplyr::mutate(
     l1_match = case_when(
       ego_l1 == "Mandarin" ~ ego_uses_Mandarin,
       ego_l1 == "English" ~ ego_uses_English,
@@ -403,8 +405,8 @@ alter_profiled <- alter |>
   )
 
 homophily <- alter_profiled |>
-  group_by(ego_id, ego_l1, ego_l2) |>
-  summarise(
+  dplyr::group_by(ego_id, ego_l1, ego_l2) |>
+  dplyr::summarise(
     prop_l1_homophily = mean_or_na(l1_match),
     prop_l2_homophily = mean_or_na(l2_match),
     .groups = "drop"
@@ -416,22 +418,23 @@ Ten of 15 alters are used with Mandarin, so `prop_l1_homophily = 0.67`. Twelve o
 ## 5.4 Wide ego-level output
 
 ```{r}
-stopifnot(
-  "ego_id" %in% names(cs_measures),
-  "ego_id" %in% names(mandarin_measures),
-  "ego_id" %in% names(homophily)
-)
+standardize_measure_id <- function(data, label) {
+  if (!"ego_id" %in% names(data) && "participant_id" %in% names(data)) {
+    data <- dplyr::rename(data, ego_id = participant_id)
+  }
+  if (!"ego_id" %in% names(data)) {
+    stop(label, " is missing ego_id. Rerun its calculation in Sections 5.1–5.3.")
+  }
+  dplyr::mutate(data, ego_id = as.character(.data$ego_id))
+}
+
+cs_measures <- standardize_measure_id(cs_measures, "cs_measures")
+mandarin_measures <- standardize_measure_id(mandarin_measures, "mandarin_measures")
+homophily <- standardize_measure_id(homophily, "homophily")
 
 ego_compositional <- cs_measures |>
-  mutate(ego_id = as.character(ego_id)) |>
-  left_join(
-    mandarin_measures |> mutate(ego_id = as.character(ego_id)),
-    by = "ego_id"
-  ) |>
-  left_join(
-    homophily |> mutate(ego_id = as.character(ego_id)),
-    by = "ego_id"
-  )
+  dplyr::left_join(mandarin_measures, by = "ego_id") |>
+  dplyr::left_join(homophily, by = "ego_id")
 
 ego_compositional_for_export <- ego_compositional |>
   rename(participant_id = ego_id)
