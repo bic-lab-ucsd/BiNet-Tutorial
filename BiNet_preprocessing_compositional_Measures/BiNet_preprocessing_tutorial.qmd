@@ -109,9 +109,15 @@ check_columns(
 )
 ```
 
-## 1.2 Import the LHQ and link a full export
+## 1.2 Choose one LHQ and network-data route
 
-Read the LHQ separately and join its ego-level variables to the Network Canvas ego file. Following Monica's preprocessing pipeline, both files already contain `ego_id`, so no rename is needed. If a study's LHQ uses another ID column, rename that actual column to `ego_id` before this block. `semi_join()` then restricts alter and tie records to egos retained in the linked ego table.
+Run either Option A or Option B in a given R session. Both options create the same three linked objects used from Section 2 onward: `egoData_linked`, `alterData_linked`, and `edgelist_linked`.
+
+### Option A: Link your own Network Canvas and LHQ data
+
+Read the LHQ once and join its ego-level variables to the Network Canvas ego file imported in Section 1.1. Following Monica's preprocessing pipeline, both ego files already contain `ego_id`, so no rename is needed. If a study's LHQ uses another ID column, rename that actual column to `ego_id` before this block.
+
+The alter and edge exports are keyed by `networkCanvasEgoUUID`. The `ego_key` join below adds the matching `ego_id` to both tables. This addition is required because `semi_join()` filters rows but does not add the ID column needed later by `tidy_alter`.
 
 ```{r}
 #| eval: false
@@ -123,15 +129,20 @@ egoData_linked <- data_ego |>
   dplyr::mutate(ego_id = as.character(ego_id)) |>
   dplyr::left_join(lhq_df, by = "ego_id")
 
+ego_key <- egoData_linked |>
+  dplyr::select(networkCanvasEgoUUID, ego_id)
+
 alterData_linked <- data_alter |>
-  dplyr::semi_join(
-    egoData_linked |> dplyr::select(networkCanvasEgoUUID),
+  dplyr::select(-dplyr::any_of("ego_id")) |>
+  dplyr::inner_join(
+    ego_key,
     by = "networkCanvasEgoUUID"
   )
 
 edgelist_linked <- data_edgelist |>
-  dplyr::semi_join(
-    egoData_linked |> dplyr::select(networkCanvasEgoUUID),
+  dplyr::select(-dplyr::any_of("ego_id")) |>
+  dplyr::inner_join(
+    ego_key,
     by = "networkCanvasEgoUUID"
   )
 ```
@@ -142,6 +153,8 @@ Use `left_join()` for the LHQ merge so every Network Canvas ego remains visible 
 #| eval: false
 stopifnot(
   nrow(egoData_linked) == dplyr::n_distinct(egoData_linked$networkCanvasEgoUUID),
+  !anyNA(alterData_linked$ego_id),
+  !anyNA(edgelist_linked$ego_id),
   all(alterData_linked$networkCanvasEgoUUID %in% egoData_linked$networkCanvasEgoUUID),
   all(edgelist_linked$networkCanvasEgoUUID %in% egoData_linked$networkCanvasEgoUUID)
 )
@@ -155,12 +168,9 @@ if (nrow(unmatched_lhq)) {
 }
 ```
 
-## 1.3 Load the supplied `jefwan37` example inputs
+### Option B: Load the supplied `jefwan37` example inputs
 
-At this point, choose the route that matches the purpose of the analysis:
-
-- **Using your own data:** run Sections 1.1 and 1.2, skip the `jefwan37` code block below, and continue to Section 2 with the `egoData_linked`, `alterData_linked`, and `edgelist_linked` objects already created from your Network Canvas and LHQ files.
-- **Reproducing the tutorial example:** run the block below. The repository already supplies three flattened, deidentified example inputs in the `data/` folder.
+Use this option instead of Option A when reproducing the tutorial. The repository already supplies three flattened, deidentified example inputs in the `data/` folder. This block loads the LHQ once and creates the same three linked objects as Option A.
 
 | Supplied example file | What it contains | Equivalent when using your own data |
 |---|---|---|
