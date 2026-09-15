@@ -44,13 +44,18 @@ alterData_linked <- data_alter |>
 edgelist_linked <- data_edgelist |>
   semi_join(egoData_linked, by = "ego_id")
 
+alter_keys <- alterData_linked |>
+  distinct(ego_id, alter_label)
+unmatched_endpoints <- bind_rows(
+  edgelist_linked |> transmute(ego_id, alter_label = source),
+  edgelist_linked |> transmute(ego_id, alter_label = target)
+) |>
+  anti_join(alter_keys, by = c("ego_id", "alter_label"))
+
 stopifnot(
-  nrow(egoData_linked) == 1L,
-  nrow(alterData_linked) == 15L,
-  nrow(edgelist_linked) == 21L,
-  !anyDuplicated(alterData_linked$alter_label),
-  all(c(edgelist_linked$source, edgelist_linked$target) %in%
-        alterData_linked$alter_label),
+  nrow(egoData_linked) == n_distinct(egoData_linked$ego_id),
+  nrow(alter_keys) == nrow(alterData_linked),
+  nrow(unmatched_endpoints) == 0L,
   !anyNA(egoData_linked[c("ego_l1", "ego_l2")])
 )
 
@@ -100,8 +105,8 @@ alter_edges <- edgelist_linked |>
   select(source, target)
 
 stopifnot(
-  nrow(tidy_alter) == 15L,
-  nrow(alter_edges) == 21L,
+  nrow(tidy_alter) == nrow(alterData_linked),
+  nrow(alter_edges) == nrow(edgelist_linked),
   all(c(alter_edges$source, alter_edges$target) %in% tidy_alter$alter_label)
 )
 

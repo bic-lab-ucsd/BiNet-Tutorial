@@ -146,7 +146,7 @@ if (nrow(unmatched_lhq)) {
 
 ## 1.3 Run the same import and merge for `jefwan37`
 
-The public walkthrough uses flattened, deidentified files instead of publishing raw Network Canvas UUIDs. Its included CSVs use `participant_id`, so the three import lines below rename that known column to `ego_id` once. All later joins, groups, and summaries use `ego_id`, matching the full Network Canvas/LHQ pipeline. `alter_label` connects the alter and edge tables.
+The public walkthrough uses three flattened, deidentified example inputs already supplied in the `data/` folder; this block reads those files rather than creating them from the preceding batch-import code. The included CSVs use `participant_id`, so the three import lines below rename that known column to `ego_id` once. All later joins, groups, and summaries use `ego_id`, matching the full Network Canvas/LHQ pipeline. `alter_label` connects the alter and edge tables. Network sizes may vary by ego, so the checks validate the links without assuming a fixed number of alters or ties.
 
 ```r
 library(dplyr)
@@ -170,18 +170,24 @@ alterData_linked <- data_alter |>
 edgelist_linked <- data_edgelist |>
   semi_join(egoData_linked, by = "ego_id")
 
+alter_keys <- alterData_linked |>
+  distinct(ego_id, alter_label)
+
+unmatched_endpoints <- bind_rows(
+  edgelist_linked |> transmute(ego_id, alter_label = source),
+  edgelist_linked |> transmute(ego_id, alter_label = target)
+) |>
+  anti_join(alter_keys, by = c("ego_id", "alter_label"))
+
 stopifnot(
-  nrow(egoData_linked) == 1,
-  nrow(alterData_linked) == 15,
-  nrow(edgelist_linked) == 21,
-  !anyDuplicated(alterData_linked$alter_label),
-  all(c(edgelist_linked$source, edgelist_linked$target) %in%
-        alterData_linked$alter_label),
+  nrow(egoData_linked) == n_distinct(egoData_linked$ego_id),
+  nrow(alter_keys) == nrow(alterData_linked),
+  nrow(unmatched_endpoints) == 0,
   !anyNA(egoData_linked[c("ego_l1", "ego_l2")])
 )
 ```
 
-The checks confirm a one-row LHQ merge, 15 linked alters, 21 linked ties, unique alter labels, and valid edge endpoints. They establish the denominator before aggregation and catch ID problems before measures are calculated.
+The checks confirm one ego-level row per ID, unique alter labels within each ego, valid edge endpoints within the same ego, and complete L1/L2 fields. They catch ID problems before measures are calculated while allowing each participant to have a different number of alters and ties.
 
 ![Three linked input levels: ego, alter/ego–alter, and alter–alter tie records.](figures/fig04_real_input_overview_all_data.png)
 
