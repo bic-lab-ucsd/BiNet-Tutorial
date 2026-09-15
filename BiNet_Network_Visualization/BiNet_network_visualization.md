@@ -34,6 +34,9 @@ for a network plot.
 preprocessing_data_dir <- file.path(
   "BiNet_preprocessing_compositional_Measures", "data"
 )
+figure_dir <- file.path("BiNet_Network_Visualization", "figures")
+dir.create(figure_dir, recursive = TRUE, showWarnings = FALSE)
+
 tidy_alter_path <- file.path(
   preprocessing_data_dir, "jefwan37_tidy_alter.csv"
 )
@@ -84,6 +87,60 @@ In this respondent’s reported interaction network, the color counts are:
 | English          |      5 |
 | Mandarin–English |      7 |
 
+## Define the shared drawing function
+
+Both panels use the same function to draw alter–alter ties, ego–alter
+ties, alter nodes, and the central ego. The arguments control whether
+node size represents emotional closeness and whether context labels are
+displayed.
+
+``` r
+draw_panel <- function(alter_data, edge_data, positions,
+                       scale_closeness = FALSE, show_contexts = FALSE,
+                       panel_label = "A") {
+  plot(
+    NA, NA,
+    xlim = c(-1.25, 1.25), ylim = c(-1.18, 1.18), asp = 1,
+    axes = FALSE, xlab = "", ylab = "", bty = "n"
+  )
+
+  if (show_contexts) {
+    abline(h = 0, v = 0, col = "#D4D4D4", lwd = 1.2)
+    text(-0.88, 1.08, "FAMILY", font = 2)
+    text(0.88, 1.08, "SOCIAL", font = 2)
+    text(-0.88, -1.08, "COMMUNITY", font = 2)
+    text(0.88, -1.08, "SCHOOL", font = 2)
+  }
+
+  pos <- positions[match(alter_data$alter_label, positions$alter_label), ]
+  rownames(pos) <- alter_data$alter_label
+
+  for (i in seq_len(nrow(edge_data))) {
+    from <- pos[edge_data$source[i], ]
+    to <- pos[edge_data$target[i], ]
+    segments(from$x, from$y, to$x, to$y,
+             col = "#A0A0A0", lwd = 1.2, lty = 2)
+  }
+
+  segments(0, 0, pos$x, pos$y, col = "#303030", lwd = 1.1)
+  node_cex <- if (scale_closeness) {
+    1.15 + 0.32 * alter_data$emotional_closeness
+  } else {
+    rep(2.15, nrow(alter_data))
+  }
+  points(
+    pos$x, pos$y, pch = 21, cex = node_cex,
+    bg = unname(language_colors[alter_data$languageUsedCategory]),
+    col = "#202020", lwd = 1.1
+  )
+  points(0, 0, pch = 21, cex = 2.25,
+         bg = "white", col = "#202020", lwd = 1.4)
+  text(0, 0, "Ego", cex = 0.9)
+  mtext(panel_label, side = 3, adj = 0,
+        line = 0.3, font = 2, cex = 1.35)
+}
+```
+
 # 3. Panel A: circular layout
 
 The circular view gives every alter the same visual status. It is useful
@@ -104,6 +161,29 @@ circle_positions <- function(labels, radius = 0.83) {
 All alter nodes are drawn at a constant size in Panel A. Solid ego–alter
 ties radiate from the center; dashed alter–alter ties come directly from
 `jefwan37_alter_edges.csv`.
+
+Create the circular positions, open a PNG device, call `draw_panel()`,
+and close the device. This writes Panel A as its own reproducible figure.
+
+``` r
+panel_a_positions <- circle_positions(alters$alter_label)
+panel_a_path <- file.path(
+  figure_dir, "fig08A_circular_network_jefwan37.png"
+)
+
+png(panel_a_path, width = 1800, height = 1800, res = 300, bg = "white")
+par(mar = c(0.2, 0.2, 1.2, 0.2))
+draw_panel(
+  alters, edges, panel_a_positions,
+  scale_closeness = FALSE,
+  show_contexts = FALSE,
+  panel_label = "A"
+)
+dev.off()
+```
+
+![Panel A: circular network layout with constant alter-node
+size.](figures/fig08A_circular_network_jefwan37.png)
 
 # 4. Panel B: interaction-context layout
 
@@ -142,7 +222,86 @@ context_positions <- function(alter_data) {
 The alternating radii reduce overlap in dense contexts. They are a
 display choice and do not represent an additional network variable.
 
-# 5. Reproduce Figure 8
+Use the context positions in the same drawing function. Here
+`scale_closeness = TRUE` changes node size, and `show_contexts = TRUE`
+adds the quadrant guides and labels.
+
+``` r
+panel_b_positions <- context_positions(alters)
+panel_b_path <- file.path(
+  figure_dir, "fig08B_context_network_jefwan37.png"
+)
+
+png(panel_b_path, width = 1800, height = 1800, res = 300, bg = "white")
+par(mar = c(0.2, 0.2, 1.2, 0.2))
+draw_panel(
+  alters, edges, panel_b_positions,
+  scale_closeness = TRUE,
+  show_contexts = TRUE,
+  panel_label = "B"
+)
+dev.off()
+```
+
+![Panel B: network layout organized by interaction context, with
+alter-node size representing emotional
+closeness.](figures/fig08B_context_network_jefwan37.png)
+
+# 5. Combine Panels A and B as Figure 8
+
+The final manuscript figure draws both panels on one device and reserves
+the bottom row for shared legends.
+
+``` r
+combined_path <- file.path(
+  figure_dir, "fig08_network_views_jefwan37.png"
+)
+
+png(combined_path, width = 3480, height = 2040, res = 300, bg = "white")
+layout(matrix(c(1, 2, 3, 3), nrow = 2, byrow = TRUE),
+       heights = c(5.1, 0.9))
+par(mar = c(0.2, 0.2, 1.2, 0.2))
+
+draw_panel(
+  alters, edges, panel_a_positions,
+  scale_closeness = FALSE, panel_label = "A"
+)
+draw_panel(
+  alters, edges, panel_b_positions,
+  scale_closeness = TRUE, show_contexts = TRUE, panel_label = "B"
+)
+
+par(mar = rep(0, 4))
+plot.new()
+plot.window(xlim = c(0, 1), ylim = c(0, 1))
+legend(
+  x = 0.05, y = 0.88,
+  legend = c("Ego", names(language_colors)),
+  pt.bg = c("white", unname(language_colors)),
+  pch = 21, pt.cex = 1.5, col = "#202020",
+  horiz = TRUE, bty = "n", xpd = NA, x.intersp = 0.8
+)
+legend(
+  x = 0.08, y = 0.38,
+  legend = c("Ego-alter tie", "Alter-alter tie"),
+  col = c("#303030", "#A0A0A0"),
+  lty = c(1, 2), lwd = 1.2,
+  horiz = TRUE, bty = "n", xpd = NA, seg.len = 2.2
+)
+text(0.78, 0.64, "Panel B emotional closeness", cex = 0.9)
+closeness_values <- c(1, 3, 5)
+closeness_x <- c(0.70, 0.80, 0.90)
+points(
+  closeness_x, rep(0.28, 3), pch = 21,
+  cex = 1.15 + 0.32 * closeness_values,
+  bg = "#D9D9D9", col = "#202020"
+)
+text(closeness_x + 0.035, rep(0.28, 3),
+     labels = closeness_values, adj = 0)
+dev.off()
+```
+
+## One-command reproduction
 
 Run from the repository root:
 
@@ -150,9 +309,10 @@ Run from the repository root:
 Rscript BiNet_Network_Visualization/code/generate_jefwan37_network.R
 ```
 
-The script uses base R, validates the node and edge counts, and writes
-`figures/fig08_network_views_jefwan37.png`. No additional package
-installation is required.
+The script runs all steps above, validates the node and edge counts, and
+writes the separate Panel A and Panel B images plus the combined
+`figures/fig08_network_views_jefwan37.png`. It uses base R, so no
+additional package installation is required.
 
 <figure>
 <img src="figures/fig08_network_views_jefwan37.png"

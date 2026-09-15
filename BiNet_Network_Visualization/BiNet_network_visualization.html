@@ -237,23 +237,20 @@
 <ul>
 <li><a href="#overview" id="toc-overview">Overview</a>
 <ul>
-<li><a href="#visual-encodings" id="toc-visual-encodings">Visual
-encodings</a></li>
+<li><a href="#visual-encodings" id="toc-visual-encodings">Visual encodings</a></li>
 </ul></li>
-<li><a href="#load-the-included-data" id="toc-load-the-included-data">1.
-Load the included data</a></li>
-<li><a href="#choose-stable-encodings"
-id="toc-choose-stable-encodings">2. Choose stable encodings</a></li>
-<li><a href="#panel-a-circular-layout"
-id="toc-panel-a-circular-layout">3. Panel A: circular layout</a></li>
-<li><a href="#panel-b-interaction-context-layout"
-id="toc-panel-b-interaction-context-layout">4. Panel B:
-interaction-context layout</a></li>
-<li><a href="#reproduce-figure-8" id="toc-reproduce-figure-8">5.
-Reproduce Figure 8</a></li>
-<li><a href="#adapt-the-code-to-another-participant"
-id="toc-adapt-the-code-to-another-participant">6. Adapt the code to
-another participant</a></li>
+<li><a href="#load-the-included-data" id="toc-load-the-included-data">1. Load the included data</a></li>
+<li><a href="#choose-stable-encodings" id="toc-choose-stable-encodings">2. Choose stable encodings</a>
+<ul>
+<li><a href="#define-the-shared-drawing-function" id="toc-define-the-shared-drawing-function">Define the shared drawing function</a></li>
+</ul></li>
+<li><a href="#panel-a-circular-layout" id="toc-panel-a-circular-layout">3. Panel A: circular layout</a></li>
+<li><a href="#panel-b-interaction-context-layout" id="toc-panel-b-interaction-context-layout">4. Panel B: interaction-context layout</a></li>
+<li><a href="#combine-panels-a-and-b-as-figure-8" id="toc-combine-panels-a-and-b-as-figure-8">5. Combine Panels A and B as Figure 8</a>
+<ul>
+<li><a href="#one-command-reproduction" id="toc-one-command-reproduction">One-command reproduction</a></li>
+</ul></li>
+<li><a href="#adapt-the-code-to-another-participant" id="toc-adapt-the-code-to-another-participant">6. Adapt the code to another participant</a></li>
 </ul>
 </nav>
 <h1 id="overview">Overview</h1>
@@ -316,33 +313,37 @@ by the preprocessing tutorial: <code>jefwan37_tidy_alter.csv</code> and
 <code>jefwan37_ego_compositional_wide.csv</code>, which contains one row
 of ego-level summary measures and therefore cannot supply the nodes and
 ties required for a network plot.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>preprocessing_data_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;BiNet_preprocessing_compositional_Measures&quot;</span>, <span class="st">&quot;data&quot;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>tidy_alter_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  preprocessing_data_dir, <span class="st">&quot;jefwan37_tidy_alter.csv&quot;</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>alter_edges_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  preprocessing_data_dir, <span class="st">&quot;jefwan37_alter_edges.csv&quot;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>alters <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  tidy_alter_path,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  alter_edges_path,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(alters) <span class="sc">==</span> <span class="dv">15</span><span class="dt">L</span>,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(edges) <span class="sc">==</span> <span class="dv">21</span><span class="dt">L</span>,</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(<span class="fu">c</span>(<span class="st">&quot;source&quot;</span>, <span class="st">&quot;target&quot;</span>) <span class="sc">%in%</span> <span class="fu">names</span>(edges)),</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(<span class="fu">c</span>(edges<span class="sc">$</span>source, edges<span class="sc">$</span>target) <span class="sc">%in%</span> alters<span class="sc">$</span>alter_label)</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code class="language-r">preprocessing_data_dir &lt;- file.path(
+  &quot;BiNet_preprocessing_compositional_Measures&quot;, &quot;data&quot;
+)
+figure_dir &lt;- file.path(&quot;BiNet_Network_Visualization&quot;, &quot;figures&quot;)
+dir.create(figure_dir, recursive = TRUE, showWarnings = FALSE)
+
+tidy_alter_path &lt;- file.path(
+  preprocessing_data_dir, &quot;jefwan37_tidy_alter.csv&quot;
+)
+alter_edges_path &lt;- file.path(
+  preprocessing_data_dir, &quot;jefwan37_alter_edges.csv&quot;
+)
+
+alters &lt;- read.csv(
+  tidy_alter_path,
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+)
+edges &lt;- read.csv(
+  alter_edges_path,
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+)
+
+stopifnot(
+  nrow(alters) == 15L,
+  nrow(edges) == 21L,
+  all(c(&quot;source&quot;, &quot;target&quot;) %in% names(edges)),
+  all(c(edges$source, edges$target) %in% alters$alter_label)
+)
+</code></pre>
 <p>The deidentified labels <code>A01</code>–<code>A15</code> connect the
 node table and the edge table. They replace names and other direct
 identifiers.</p>
@@ -378,70 +379,181 @@ are:</p>
 </tr>
 </tbody>
 </table>
+<h2 id="define-the-shared-drawing-function">Define the shared drawing function</h2>
+<p>Both panels use the same function to draw alter–alter ties, ego–alter ties, alter nodes, and the central ego. The arguments control whether node size represents emotional closeness and whether context labels are displayed.</p>
+<pre><code class="language-r">draw_panel &lt;- function(alter_data, edge_data, positions,
+                       scale_closeness = FALSE, show_contexts = FALSE,
+                       panel_label = &quot;A&quot;) {
+  plot(
+    NA, NA,
+    xlim = c(-1.25, 1.25), ylim = c(-1.18, 1.18), asp = 1,
+    axes = FALSE, xlab = &quot;&quot;, ylab = &quot;&quot;, bty = &quot;n&quot;
+  )
+
+  if (show_contexts) {
+    abline(h = 0, v = 0, col = &quot;#D4D4D4&quot;, lwd = 1.2)
+    text(-0.88, 1.08, &quot;FAMILY&quot;, font = 2)
+    text(0.88, 1.08, &quot;SOCIAL&quot;, font = 2)
+    text(-0.88, -1.08, &quot;COMMUNITY&quot;, font = 2)
+    text(0.88, -1.08, &quot;SCHOOL&quot;, font = 2)
+  }
+
+  pos &lt;- positions[match(alter_data$alter_label, positions$alter_label), ]
+  rownames(pos) &lt;- alter_data$alter_label
+
+  for (i in seq_len(nrow(edge_data))) {
+    from &lt;- pos[edge_data$source[i], ]
+    to &lt;- pos[edge_data$target[i], ]
+    segments(from$x, from$y, to$x, to$y,
+             col = &quot;#A0A0A0&quot;, lwd = 1.2, lty = 2)
+  }
+
+  segments(0, 0, pos$x, pos$y, col = &quot;#303030&quot;, lwd = 1.1)
+  node_cex &lt;- if (scale_closeness) {
+    1.15 + 0.32 * alter_data$emotional_closeness
+  } else {
+    rep(2.15, nrow(alter_data))
+  }
+  points(
+    pos$x, pos$y, pch = 21, cex = node_cex,
+    bg = unname(language_colors[alter_data$languageUsedCategory]),
+    col = &quot;#202020&quot;, lwd = 1.1
+  )
+  points(0, 0, pch = 21, cex = 2.25,
+         bg = &quot;white&quot;, col = &quot;#202020&quot;, lwd = 1.4)
+  text(0, 0, &quot;Ego&quot;, cex = 0.9)
+  mtext(panel_label, side = 3, adj = 0,
+        line = 0.3, font = 2, cex = 1.35)
+}
+</code></pre>
 <h1 id="panel-a-circular-layout">3. Panel A: circular layout</h1>
-<p>The circular view gives every alter the same visual status. It is
-useful for inspecting overall language composition and alter–alter
-connectivity without assigning spatial meaning to context.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>circle_positions <span class="ot">&lt;-</span> <span class="cf">function</span>(labels, <span class="at">radius =</span> <span class="fl">0.83</span>) {</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  angles <span class="ot">&lt;-</span> pi <span class="sc">/</span> <span class="dv">2</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> (<span class="fu">seq_along</span>(labels) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="fu">length</span>(labels)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">alter_label =</span> labels,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> radius <span class="sc">*</span> <span class="fu">cos</span>(angles),</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> radius <span class="sc">*</span> <span class="fu">sin</span>(angles)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<p>All alter nodes are drawn at a constant size in Panel A. Solid
-ego–alter ties radiate from the center; dashed alter–alter ties come
-directly from <code>jefwan37_alter_edges.csv</code>.</p>
-<h1 id="panel-b-interaction-context-layout">4. Panel B:
-interaction-context layout</h1>
-<p>The contextualized view moves alters into quadrants based on
-<code>interaction_context</code>. This respondent has no work alters, so
-no work quadrant is displayed. Node size represents emotional closeness,
-allowing context, language use, and tie strength to be inspected
-together.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>context_positions <span class="ot">&lt;-</span> <span class="cf">function</span>(alter_data) {</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  ranges <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">178</span>), <span class="at">social =</span> <span class="fu">c</span>(<span class="dv">12</span>, <span class="dv">80</span>),</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">community =</span> <span class="fu">c</span>(<span class="dv">205</span>, <span class="dv">255</span>), <span class="at">school =</span> <span class="fu">c</span>(<span class="dv">285</span>, <span class="dv">335</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  placed <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">names</span>(ranges), <span class="cf">function</span>(context) {</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    labels <span class="ot">&lt;-</span> alter_data<span class="sc">$</span>alter_label[</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      alter_data<span class="sc">$</span>interaction_context <span class="sc">==</span> context</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">length</span>(labels)) <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    limits <span class="ot">&lt;-</span> ranges[[context]]</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    degrees <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">length</span>(labels) <span class="sc">==</span> <span class="dv">1</span><span class="dt">L</span>) <span class="fu">mean</span>(limits) <span class="cf">else</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">seq</span>(limits[<span class="dv">1</span>], limits[<span class="dv">2</span>], <span class="at">length.out =</span> <span class="fu">length</span>(labels))</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    radius <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="fl">0.76</span>, <span class="fl">1.05</span>), <span class="at">length.out =</span> <span class="fu">length</span>(labels))</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    angles <span class="ot">&lt;-</span> degrees <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">alter_label =</span> labels,</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> radius <span class="sc">*</span> <span class="fu">cos</span>(angles),</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> radius <span class="sc">*</span> <span class="fu">sin</span>(angles)</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">do.call</span>(rbind, placed)</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<p>The alternating radii reduce overlap in dense contexts. They are a
-display choice and do not represent an additional network variable.</p>
-<h1 id="reproduce-figure-8">5. Reproduce Figure 8</h1>
+<p>The circular view gives every alter the same visual status. It is useful for inspecting overall language composition and alter–alter connectivity without assigning spatial meaning to context.</p>
+<pre><code class="language-r">circle_positions &lt;- function(labels, radius = 0.83) {
+  angles &lt;- pi / 2 + 2 * pi * (seq_along(labels) - 1) / length(labels)
+  data.frame(
+    alter_label = labels,
+    x = radius * cos(angles),
+    y = radius * sin(angles)
+  )
+}
+</code></pre>
+<p>All alter nodes are drawn at a constant size in Panel A. Solid ego–alter ties radiate from the center; dashed alter–alter ties come directly from <code>jefwan37_alter_edges.csv</code>.</p>
+<p>Create the circular positions, open a PNG device, call <code>draw_panel()</code>, and close the device. This writes Panel A as its own reproducible figure.</p>
+<pre><code class="language-r">panel_a_positions &lt;- circle_positions(alters$alter_label)
+panel_a_path &lt;- file.path(
+  figure_dir, &quot;fig08A_circular_network_jefwan37.png&quot;
+)
+
+png(panel_a_path, width = 1800, height = 1800, res = 300, bg = &quot;white&quot;)
+par(mar = c(0.2, 0.2, 1.2, 0.2))
+draw_panel(
+  alters, edges, panel_a_positions,
+  scale_closeness = FALSE,
+  show_contexts = FALSE,
+  panel_label = &quot;A&quot;
+)
+dev.off()
+</code></pre>
+<p><img src="figures/fig08A_circular_network_jefwan37.png" alt="Panel A: circular network layout with constant alter-node size." /></p>
+<h1 id="panel-b-interaction-context-layout">4. Panel B: interaction-context layout</h1>
+<p>The contextualized view moves alters into quadrants based on <code>interaction_context</code>. This respondent has no work alters, so no work quadrant is displayed. Node size represents emotional closeness, allowing context, language use, and tie strength to be inspected together.</p>
+<pre><code class="language-r">context_positions &lt;- function(alter_data) {
+  ranges &lt;- list(
+    family = c(100, 178), social = c(12, 80),
+    community = c(205, 255), school = c(285, 335)
+  )
+  placed &lt;- lapply(names(ranges), function(context) {
+    labels &lt;- alter_data$alter_label[
+      alter_data$interaction_context == context
+    ]
+    if (!length(labels)) return(NULL)
+    limits &lt;- ranges[[context]]
+    degrees &lt;- if (length(labels) == 1L) mean(limits) else
+      seq(limits[1], limits[2], length.out = length(labels))
+    radius &lt;- rep(c(0.76, 1.05), length.out = length(labels))
+    angles &lt;- degrees * pi / 180
+    data.frame(
+      alter_label = labels,
+      x = radius * cos(angles),
+      y = radius * sin(angles)
+    )
+  })
+  do.call(rbind, placed)
+}
+</code></pre>
+<p>The alternating radii reduce overlap in dense contexts. They are a display choice and do not represent an additional network variable.</p>
+<p>Use the context positions in the same drawing function. Here <code>scale_closeness = TRUE</code> changes node size, and <code>show_contexts = TRUE</code> adds the quadrant guides and labels.</p>
+<pre><code class="language-r">panel_b_positions &lt;- context_positions(alters)
+panel_b_path &lt;- file.path(
+  figure_dir, &quot;fig08B_context_network_jefwan37.png&quot;
+)
+
+png(panel_b_path, width = 1800, height = 1800, res = 300, bg = &quot;white&quot;)
+par(mar = c(0.2, 0.2, 1.2, 0.2))
+draw_panel(
+  alters, edges, panel_b_positions,
+  scale_closeness = TRUE,
+  show_contexts = TRUE,
+  panel_label = &quot;B&quot;
+)
+dev.off()
+</code></pre>
+<p><img src="figures/fig08B_context_network_jefwan37.png" alt="Panel B: network layout organized by interaction context, with alter-node size representing emotional closeness." /></p>
+<h1 id="combine-panels-a-and-b-as-figure-8">5. Combine Panels A and B as Figure 8</h1>
+<p>The final manuscript figure draws both panels on one device and reserves the bottom row for shared legends.</p>
+<pre><code class="language-r">combined_path &lt;- file.path(
+  figure_dir, &quot;fig08_network_views_jefwan37.png&quot;
+)
+
+png(combined_path, width = 3480, height = 2040, res = 300, bg = &quot;white&quot;)
+layout(matrix(c(1, 2, 3, 3), nrow = 2, byrow = TRUE),
+       heights = c(5.1, 0.9))
+par(mar = c(0.2, 0.2, 1.2, 0.2))
+
+draw_panel(
+  alters, edges, panel_a_positions,
+  scale_closeness = FALSE, panel_label = &quot;A&quot;
+)
+draw_panel(
+  alters, edges, panel_b_positions,
+  scale_closeness = TRUE, show_contexts = TRUE, panel_label = &quot;B&quot;
+)
+
+par(mar = rep(0, 4))
+plot.new()
+plot.window(xlim = c(0, 1), ylim = c(0, 1))
+legend(
+  x = 0.05, y = 0.88,
+  legend = c(&quot;Ego&quot;, names(language_colors)),
+  pt.bg = c(&quot;white&quot;, unname(language_colors)),
+  pch = 21, pt.cex = 1.5, col = &quot;#202020&quot;,
+  horiz = TRUE, bty = &quot;n&quot;, xpd = NA, x.intersp = 0.8
+)
+legend(
+  x = 0.08, y = 0.38,
+  legend = c(&quot;Ego-alter tie&quot;, &quot;Alter-alter tie&quot;),
+  col = c(&quot;#303030&quot;, &quot;#A0A0A0&quot;),
+  lty = c(1, 2), lwd = 1.2,
+  horiz = TRUE, bty = &quot;n&quot;, xpd = NA, seg.len = 2.2
+)
+text(0.78, 0.64, &quot;Panel B emotional closeness&quot;, cex = 0.9)
+closeness_values &lt;- c(1, 3, 5)
+closeness_x &lt;- c(0.70, 0.80, 0.90)
+points(
+  closeness_x, rep(0.28, 3), pch = 21,
+  cex = 1.15 + 0.32 * closeness_values,
+  bg = &quot;#D9D9D9&quot;, col = &quot;#202020&quot;
+)
+text(closeness_x + 0.035, rep(0.28, 3),
+     labels = closeness_values, adj = 0)
+dev.off()
+</code></pre>
+<h2 id="one-command-reproduction">One-command reproduction</h2>
 <p>Run from the repository root:</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> BiNet_Network_Visualization/code/generate_jefwan37_network.R</span></code></pre></div>
-<p>The script uses base R, validates the node and edge counts, and
-writes <code>figures/fig08_network_views_jefwan37.png</code>. No
-additional package installation is required.</p>
-<figure>
-<img src="figures/fig08_network_views_jefwan37.png"
-alt="Two views of the observed network for jefwan37. Panel A uses a circular layout and constant alter-node size. Panel B groups alters by interaction context and scales alter-node size by emotional closeness. In both panels, color represents reported interaction language, solid lines represent ego–alter ties, and dashed lines represent alter–alter ties." />
-<figcaption aria-hidden="true">Two views of the observed network for
-jefwan37. Panel A uses a circular layout and constant alter-node size.
-Panel B groups alters by interaction context and scales alter-node size
-by emotional closeness. In both panels, color represents reported
-interaction language, solid lines represent ego–alter ties, and dashed
-lines represent alter–alter ties.</figcaption>
-</figure>
+<pre><code class="language-bash">Rscript BiNet_Network_Visualization/code/generate_jefwan37_network.R
+</code></pre>
+<p>The script runs all steps above, validates the node and edge counts, and writes the separate Panel A and Panel B images plus the combined <code>figures/fig08_network_views_jefwan37.png</code>. It uses base R, so no additional package installation is required.</p>
+<p><img src="figures/fig08_network_views_jefwan37.png" alt="Two views of the observed network for jefwan37. Panel A uses a circular layout and constant alter-node size. Panel B groups alters by interaction context and scales alter-node size by emotional closeness. In both panels, color represents reported interaction language, solid lines represent ego–alter ties, and dashed lines represent alter–alter ties." /></p>
 <h1 id="adapt-the-code-to-another-participant">6. Adapt the code to
 another participant</h1>
 <p>To reuse the script, provide one tidy alter file and one edge file

@@ -128,6 +128,25 @@ draw_panel <- function(alter_data, edge_data, positions,
 }
 
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+
+panel_a_path <- file.path(output_dir, "fig08A_circular_network_jefwan37.png")
+png(panel_a_path, width = 1800, height = 1800, res = 300, bg = "white")
+par(mar = c(0.2, 0.2, 1.2, 0.2))
+draw_panel(
+  alters, edges, circle_positions(alters$alter_label),
+  scale_closeness = FALSE, panel_label = "A"
+)
+dev.off()
+
+panel_b_path <- file.path(output_dir, "fig08B_context_network_jefwan37.png")
+png(panel_b_path, width = 1800, height = 1800, res = 300, bg = "white")
+par(mar = c(0.2, 0.2, 1.2, 0.2))
+draw_panel(
+  alters, edges, context_positions(alters),
+  scale_closeness = TRUE, show_contexts = TRUE, panel_label = "B"
+)
+dev.off()
+
 output_path <- file.path(output_dir, "fig08_network_views_jefwan37.png")
 png(output_path, width = 3480, height = 2040, res = 300, bg = "white")
 layout(matrix(c(1, 2, 3, 3), nrow = 2, byrow = TRUE), heights = c(5.1, 0.9))
@@ -169,4 +188,6 @@ points(
 text(closeness_x + 0.035, rep(0.28, 3), labels = closeness_values, adj = 0)
 dev.off()
 
+message(panel_a_path)
+message(panel_b_path)
 message(output_path)
