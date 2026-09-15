@@ -362,19 +362,19 @@
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">check_columns</span>(</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  data_alter,</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;networkCanvasEgoUUID&quot;</span>, <span class="st">&quot;networkCanvasUUID&quot;</span>, <span class="st">&quot;nodeID&quot;</span>),</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;networkCanvasEgoUUID&quot;</span>, <span class="st">&quot;networkCanvasUUID&quot;</span>, <span class="st">&quot;nodeID&quot;</span>, <span class="st">&quot;name&quot;</span>),</span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Alter export&quot;</span></span>
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">check_columns</span>(</span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  data_edgelist,</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;networkCanvasEgoUUID&quot;</span>, <span class="st">&quot;networkCanvasSourceUUID&quot;</span>, <span class="st">&quot;networkCanvasTargetUUID&quot;</span>),</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;networkCanvasEgoUUID&quot;</span>, <span class="st">&quot;from&quot;</span>, <span class="st">&quot;to&quot;</span>),</span>
 <span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Tie export&quot;</span></span>
 <span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <h2 id="choose-one-lhq-and-network-data-route">1.2 Choose one LHQ and network-data route</h2>
 <p>Run either Option A or Option B in a given R session. Both options create the same three linked objects used from Section 2 onward: <code>egoData_linked</code>, <code>alterData_linked</code>, and <code>edgelist_linked</code>.</p>
 <h3 id="option-a-link-your-own-network-canvas-and-lhq-data">Option A: Link your own Network Canvas and LHQ data</h3>
 <p>Read the LHQ once and join its ego-level variables to the Network Canvas ego file imported in Section 1.1. Following Monica’s preprocessing pipeline, both ego files already contain <code>ego_id</code>, so no rename is needed. If a study’s LHQ uses another ID column, rename that actual column to <code>ego_id</code> before this block.</p>
-<p>The alter and edge exports are keyed by <code>networkCanvasEgoUUID</code>. The <code>ego_key</code> join below adds the matching <code>ego_id</code> to both tables. This addition is required because <code>semi_join()</code> filters rows but does not add the ID column needed later by <code>tidy_alter</code>.</p>
+<p>The alter and edge exports are keyed by <code>networkCanvasEgoUUID</code>. The <code>ego_key</code> join below adds the matching <code>ego_id</code> to both tables. This addition is required because <code>semi_join()</code> filters rows but does not add the ID column needed later by <code>tidy_alter</code>. The same block standardizes Network Canvas’s <code>name</code>, <code>from</code>, and <code>to</code> columns as <code>alter_label</code>, <code>source</code>, and <code>target</code>, which are the names used throughout the rest of the tutorial.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>lhq_df <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&quot;data/lhq.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id))</span>
@@ -392,14 +392,16 @@
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">inner_join</span>(</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    ego_key,</span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">&quot;networkCanvasEgoUUID&quot;</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb4-18a"><a href="#cb4-18a" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">alter_label =</span> name)</span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>edgelist_linked <span class="ot">&lt;-</span> data_edgelist <span class="sc">|</span><span class="er">&gt;</span></span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>dplyr<span class="sc">::</span><span class="fu">any_of</span>(<span class="st">&quot;ego_id&quot;</span>)) <span class="sc">|</span><span class="er">&gt;</span></span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">inner_join</span>(</span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    ego_key,</span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">&quot;networkCanvasEgoUUID&quot;</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb4-25a"><a href="#cb4-25a" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">source =</span> from, <span class="at">target =</span> to)</span></code></pre></div>
 <p>Use <code>left_join()</code> for the LHQ merge so every Network Canvas ego remains visible even if its questionnaire row is missing. Check the result immediately rather than allowing an unmatched LHQ record to become an unnoticed block of missing variables.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
@@ -522,6 +524,7 @@
 </table>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>alter <span class="ot">&lt;-</span> alterData_linked <span class="sc">|</span><span class="er">&gt;</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-2a"><a href="#cb7-2a" aria-hidden="true" tabindex="-1"></a>    <span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id),</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">languageKnownCategory =</span> <span class="fu">case_when</span>(</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>      alter_knows_Mandarin <span class="sc">&amp;</span> alter_knows_English <span class="sc">~</span> <span class="st">&quot;Mandarin-English&quot;</span>,</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>      alter_knows_Mandarin <span class="sc">~</span> <span class="st">&quot;Mandarin&quot;</span>,</span>
@@ -630,9 +633,10 @@
 <h2 id="ego-specific-l1l2-homophily">5.3 Ego-specific L1/L2 homophily</h2>
 <p>Language homophily must be mapped to each ego’s language profile rather than tied permanently to Mandarin or English. For this respondent, L1 is Mandarin and L2 is English. A bilingual dyad contributes to both L1 and L2 homophily.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ego_profile <span class="ot">&lt;-</span> egoData_linked <span class="sc">|</span><span class="er">&gt;</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ego_id, ego_l1, ego_l2)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id), ego_l1, ego_l2)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>alter_profiled <span class="ot">&lt;-</span> alter <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb13-4a"><a href="#cb13-4a" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id)) <span class="sc">|</span><span class="er">&gt;</span></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(ego_profile, <span class="at">by =</span> <span class="st">&quot;ego_id&quot;</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">l1_match =</span> <span class="fu">case_when</span>(</span>
@@ -656,15 +660,28 @@
 <span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
 <p>Ten of 15 alters are used with Mandarin, so <code>prop_l1_homophily = 0.67</code>. Twelve of 15 are used with English, so <code>prop_l2_homophily = 0.80</code>.</p>
 <h2 id="wide-ego-level-output">5.4 Wide ego-level output</h2>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ego_compositional <span class="ot">&lt;-</span> cs_measures <span class="sc">|</span><span class="er">&gt;</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(mandarin_measures, <span class="at">by =</span> <span class="st">&quot;ego_id&quot;</span>) <span class="sc">|</span><span class="er">&gt;</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(homophily, <span class="at">by =</span> <span class="st">&quot;ego_id&quot;</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>ego_compositional_for_export <span class="ot">&lt;-</span> ego_compositional <span class="sc">|</span><span class="er">&gt;</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">participant_id =</span> ego_id)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(ego_compositional_for_export, <span class="st">&quot;data/jefwan37_ego_compositional_wide.csv&quot;</span>)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>ego_compositional</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;ego_id&quot;</span> <span class="sc">%in%</span> <span class="fu">names</span>(cs_measures),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;ego_id&quot;</span> <span class="sc">%in%</span> <span class="fu">names</span>(mandarin_measures),</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;ego_id&quot;</span> <span class="sc">%in%</span> <span class="fu">names</span>(homophily)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>ego_compositional <span class="ot">&lt;-</span> cs_measures <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id)) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    mandarin_measures <span class="sc">|</span><span class="er">&gt;</span> <span class="fu">mutate</span>(<span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id)),</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">&quot;ego_id&quot;</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    homophily <span class="sc">|</span><span class="er">&gt;</span> <span class="fu">mutate</span>(<span class="at">ego_id =</span> <span class="fu">as.character</span>(ego_id)),</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">&quot;ego_id&quot;</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>ego_compositional_for_export <span class="ot">&lt;-</span> ego_compositional <span class="sc">|</span><span class="er">&gt;</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">participant_id =</span> ego_id)</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(ego_compositional_for_export, <span class="st">&quot;data/jefwan37_ego_compositional_wide.csv&quot;</span>)</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>ego_compositional</span></code></pre></div>
 <figure>
 <img src="figures/fig07_real_composition_jefwan37.png" alt="Tidy dyad records aggregated to one wide row of ego-level compositional measures." /><figcaption aria-hidden="true">Tidy dyad records aggregated to one wide row of ego-level compositional measures.</figcaption>
 </figure>

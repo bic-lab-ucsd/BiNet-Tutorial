@@ -88,12 +88,12 @@ check_columns(
 )
 check_columns(
   data_alter,
-  c("networkCanvasEgoUUID", "networkCanvasUUID", "nodeID"),
+  c("networkCanvasEgoUUID", "networkCanvasUUID", "nodeID", "name"),
   "Alter export"
 )
 check_columns(
   data_edgelist,
-  c("networkCanvasEgoUUID", "networkCanvasSourceUUID", "networkCanvasTargetUUID"),
+  c("networkCanvasEgoUUID", "from", "to"),
   "Tie export"
 )
 ```
@@ -106,7 +106,7 @@ Run either Option A or Option B in a given R session. Both options create the sa
 
 Read the LHQ once and join its ego-level variables to the Network Canvas ego file imported in Section 1.1. Following Monica's preprocessing pipeline, both ego files already contain `ego_id`, so no rename is needed. If a study's LHQ uses another ID column, rename that actual column to `ego_id` before this block.
 
-The alter and edge exports are keyed by `networkCanvasEgoUUID`. The `ego_key` join below adds the matching `ego_id` to both tables. This addition is required because `semi_join()` filters rows but does not add the ID column needed later by `tidy_alter`.
+The alter and edge exports are keyed by `networkCanvasEgoUUID`. The `ego_key` join below adds the matching `ego_id` to both tables. This addition is required because `semi_join()` filters rows but does not add the ID column needed later by `tidy_alter`. The same block standardizes Network Canvas's `name`, `from`, and `to` columns as `alter_label`, `source`, and `target`, which are the names used throughout the rest of the tutorial.
 
 ```r
 
@@ -126,14 +126,16 @@ alterData_linked <- data_alter |>
   dplyr::inner_join(
     ego_key,
     by = "networkCanvasEgoUUID"
-  )
+  ) |>
+  dplyr::rename(alter_label = name)
 
 edgelist_linked <- data_edgelist |>
   dplyr::select(-dplyr::any_of("ego_id")) |>
   dplyr::inner_join(
     ego_key,
     by = "networkCanvasEgoUUID"
-  )
+  ) |>
+  dplyr::rename(source = from, target = to)
 ```
 
 Use `left_join()` for the LHQ merge so every Network Canvas ego remains visible even if its questionnaire row is missing. Check the result immediately rather than allowing an unmatched LHQ record to become an unnoticed block of missing variables.
@@ -229,6 +231,7 @@ Network Canvas exports one Boolean column for each language. Two paired indicato
 ```r
 alter <- alterData_linked |>
   mutate(
+    ego_id = as.character(ego_id),
     languageKnownCategory = case_when(
       alter_knows_Mandarin & alter_knows_English ~ "Mandarin-English",
       alter_knows_Mandarin ~ "Mandarin",
@@ -370,9 +373,10 @@ Language homophily must be mapped to each ego's language profile rather than tie
 
 ```r
 ego_profile <- egoData_linked |>
-  select(ego_id, ego_l1, ego_l2)
+  transmute(ego_id = as.character(ego_id), ego_l1, ego_l2)
 
 alter_profiled <- alter |>
+  mutate(ego_id = as.character(ego_id)) |>
   left_join(ego_profile, by = "ego_id") |>
   mutate(
     l1_match = case_when(
@@ -401,9 +405,22 @@ Ten of 15 alters are used with Mandarin, so `prop_l1_homophily = 0.67`. Twelve o
 ## 5.4 Wide ego-level output
 
 ```r
+stopifnot(
+  "ego_id" %in% names(cs_measures),
+  "ego_id" %in% names(mandarin_measures),
+  "ego_id" %in% names(homophily)
+)
+
 ego_compositional <- cs_measures |>
-  left_join(mandarin_measures, by = "ego_id") |>
-  left_join(homophily, by = "ego_id")
+  mutate(ego_id = as.character(ego_id)) |>
+  left_join(
+    mandarin_measures |> mutate(ego_id = as.character(ego_id)),
+    by = "ego_id"
+  ) |>
+  left_join(
+    homophily |> mutate(ego_id = as.character(ego_id)),
+    by = "ego_id"
+  )
 
 ego_compositional_for_export <- ego_compositional |>
   rename(participant_id = ego_id)

@@ -62,6 +62,7 @@ stopifnot(
 # Recode the binary Network Canvas indicators into the analysis variables.
 alter <- alterData_linked |>
   mutate(
+    ego_id = as.character(ego_id),
     languageKnownCategory = case_when(
       alter_knows_Mandarin & alter_knows_English ~ "Mandarin-English",
       alter_knows_Mandarin ~ "Mandarin",
@@ -113,9 +114,10 @@ stopifnot(
 # Use the imported LHQ profile for ego-specific homophily. A bilingual alter
 # contributes to both L1 and L2 homophily measures.
 ego_profile <- egoData_linked |>
-  select(ego_id, ego_l1, ego_l2)
+  transmute(ego_id = as.character(ego_id), ego_l1, ego_l2)
 
 alter <- alter |>
+  mutate(ego_id = as.character(ego_id)) |>
   left_join(ego_profile, by = "ego_id") |>
   mutate(
     l1_match = case_when(
